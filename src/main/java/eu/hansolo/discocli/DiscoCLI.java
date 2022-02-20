@@ -60,7 +60,7 @@ import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
     description              = "Get a direct download link to JDK pkg defined by the given parameters",
     version                  = "17.0.0"
 )
-public class DiscoGetCmd implements Callable<Integer> {
+public class DiscoCLI implements Callable<Integer> {
 
     //@Parameters(index = "0", description = "The operating system of the requested JDK")
     //private OperatingSystem os;
@@ -214,7 +214,7 @@ public class DiscoGetCmd implements Callable<Integer> {
 
 
     public static void main(final String... args) {
-        int exitCode = new CommandLine(new DiscoGetCmd()).execute(args);
+        int exitCode = new CommandLine(new DiscoCLI()).execute(args);
         System.exit(exitCode);
     }
 }

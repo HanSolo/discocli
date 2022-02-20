@@ -13,7 +13,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 description = 'Disco CLI is a command line interface for the foojay.io Disco API'
-mainClassName = "$moduleName/eu.hansolo.discocli/DiscoGetCmd"
+mainClassName = "$moduleName/eu.hansolo.discocli/DiscoCLI"
 
 Date buildTimeAndDate = new Date()
 ext {
@@ -71,15 +71,15 @@ jar {
                 'Bundle-SymbolicName'   : 'eu.hansolo.discocli',
                 'Export-Package'        : 'eu.hansolo.discocli,eu.hansolo.discocli.util',
                 'Class-Path'            : '${project.name}-${project.version}.jar',
-                'Main-Class'            : 'eu.hansolo.discocli.DiscoGetCmd'
+                'Main-Class'            : 'eu.hansolo.discocli.DiscoCLI'
         )
     }
 }
 
 
 // start the demo from gradle
-task DiscoGet(type: JavaExec) {
-    mainClass = "eu.hansolo.discocli/DiscoGetCmd"
+task DiscoCLI(type: JavaExec) {
+    mainClass = "eu.hansolo.discocli/DiscoCLI"
     classpath = sourceSets.main.runtimeClasspath
 }
 
