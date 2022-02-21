@@ -10,8 +10,6 @@ module eu.hansolo.discocli {
     requires com.google.gson;
     requires info.picocli;
 
-    opens eu.hansolo.discocli.using.picoli;
-
     exports eu.hansolo.discocli.util;
     exports eu.hansolo.discocli;
 }

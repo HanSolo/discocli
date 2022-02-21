@@ -99,6 +99,8 @@ public class DiscoCLI implements Callable<Integer> {
 
     @Option(names = { "-fx", "--javafx" }, description = "Bundled with JavaFX") boolean fx;
 
+    @Option(names = { "-latest" }, description = "Latest available for given version number") boolean latest;
+
     private void downloadPkg(final String url, final String filename, final long size) throws IOException {
         final URL downloadUrl = new URL(url);
         try (InputStream in  = downloadUrl.openStream()) {
@@ -136,6 +138,7 @@ public class DiscoCLI implements Callable<Integer> {
                                                             .append("[").append(yellow).append(" -pt").append(end).append("=<pt>]").append(" ")
                                                             .append("[").append(yellow).append(" -ea").append(end).append("]").append(" ")
                                                             .append("[").append(yellow).append(" -fx").append(end).append("]").append(" ")
+                                                            .append("[").append(yellow).append(" -latest").append(end).append("]").append(" ")
                                                             .append("[").append(yellow).append(" -i").append(end).append("]").append(" ");
             StringBuilder helpBuilder2 = new StringBuilder().append("\nDownload a JDK pkg defined by the given parameters").append("\n")
                                                             .append(yellow).append(" -d,   --distribution").append(end).append("=<d> Distribution (e.g. zulu, temurin, etc.)").append("\n")
@@ -147,6 +150,7 @@ public class DiscoCLI implements Callable<Integer> {
                                                             .append(yellow).append(" -pt,  --package-type").append(end).append("=<pt> Package type (e.g. jdk, jre)").append("\n")
                                                             .append(yellow).append(" -ea,  --early-access").append(end).append(" Include early access builds").append("\n")
                                                             .append(yellow).append(" -fx,  --javafx").append(end).append(" Bundled with JavaFX").append("\n")
+                                                            .append(yellow).append(" -latest").append(end).append(" Latest available for given version number").append("\n")
                                                             .append(yellow).append(" -i,   --info").append(end).append(" Info about parameters").append("\n");
 
             System.out.println(Ansi.AUTO.string(helpBuilder1.toString()));
@@ -272,10 +276,16 @@ public class DiscoCLI implements Callable<Integer> {
             }
         }
 
+        if (null == versionNumber && latest) {
+            System.out.println(Ansi.AUTO.string("@|red -latest only works with a given version number |@"));
+            return 1;
+        }
+
         final String distributionParam         = "?distro=" + distro.getApiString();
         final String operatingSystemParam      = "&operating_system=" + operatingSystem.getApiString();
         final String libcTypeParam             = "&lib_c_type=" + libcType.getApiString();
-        final String versionParam              = null == versionNumber ? "&latest=available" : "&version=" + URLEncoder.encode(versionNumber.toString(OutputFormat.FULL_COMPRESSED, true, true), StandardCharsets.UTF_8);
+        final String versionParam              = null == versionNumber ? "" : "&version=" + URLEncoder.encode(versionNumber.toString(OutputFormat.FULL_COMPRESSED, true, true), StandardCharsets.UTF_8);
+        final String latestParam               = null == versionNumber || latest ? "&latest=available" : "";
         final String archiveTypeParam          = "&archive_type=" + archiveType.getApiString();
         final String javafxBundledParam        = fx ? "&javafx_bundled=true" : "";
         final String packageTypeParam          = "&package_type=" + packageType.getApiString();
@@ -290,6 +300,7 @@ public class DiscoCLI implements Callable<Integer> {
                                                   .append(libcTypeParam)
                                                   .append(architectureParam)
                                                   .append(versionParam)
+                                                  .append(latestParam)
                                                   .append(archiveTypeParam)
                                                   .append(javafxBundledParam)
                                                   .append(packageTypeParam)
