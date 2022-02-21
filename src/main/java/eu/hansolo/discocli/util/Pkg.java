@@ -203,6 +203,10 @@ public class Pkg {
         return Objects.hash(distribution, javaVersion, latestBuildAvailable, architecture, operatingSystem, packageType, releaseStatus, archiveType, termOfSupport, javafxBundled, ephemeralId);
     }
 
+    public String toCliString() {
+        return new StringBuilder().append(distribution.getApiString()).append(",").append(javaVersion.toString(true)).append(",").append(operatingSystem.getApiString()).append(",").append(architecture.getApiString()).append(",").append(archiveType.getApiString()).toString();
+    }
+
     @Override public String toString() {
         return new StringBuilder().append(CURLY_BRACKET_OPEN)
                                   .append(QUOTES).append(FIELD_ID).append(QUOTES).append(COLON).append(QUOTES).append(getId()).append(QUOTES).append(COMMA)

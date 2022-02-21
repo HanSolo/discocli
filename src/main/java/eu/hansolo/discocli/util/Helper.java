@@ -18,6 +18,15 @@
 
 package eu.hansolo.discocli.util;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import eu.hansolo.jdktools.Architecture;
+import eu.hansolo.jdktools.ArchiveType;
+import eu.hansolo.jdktools.OperatingSystem;
+import eu.hansolo.jdktools.PackageType;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -28,9 +37,11 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -236,6 +247,37 @@ public class Helper {
             default:
                 return null;
         }
+    }
+
+    public static List<Pkg> getPkgsForDistributionAndMajorVersion(final Distribution distribution, final int majorVersion, final OperatingSystem operatingSystem, final Architecture architecture, final PackageType packageType, final ArchiveType archiveType, final boolean includeEA) {
+        StringBuilder builder = new StringBuilder().append(Constants.DISCO_API_URL).append(Constants.PACKAGES_ENDPOINT).append("?distro=").append(distribution.getApiString()).append("&version=").append(majorVersion);
+        if (null != operatingSystem) { builder.append("&operating_system=").append(operatingSystem.getApiString()); }
+        if (null != architecture)    { builder.append("&architecture=").append(architecture.getApiString()); }
+        if (null != packageType)     { builder.append("&package_type=").append(packageType.getApiString()); }
+        if (null != archiveType)     { builder.append("&archive_type=").append(archiveType.getApiString()); }
+        builder.append("&latest=all_of_version");
+
+        String request = builder.toString();
+        HttpResponse<String> response = get(request);
+        if (null == response || response.statusCode() != 200 || null == response.body() || response.body().isEmpty()) {
+            return List.of();
+        }
+
+        List<Pkg>   pkgs      = new LinkedList<>();
+        String      bodyText  = response.body();
+        Set<Pkg>    pkgsFound = new HashSet<>();
+        Gson        gson      = new Gson();
+        JsonElement element   = gson.fromJson(bodyText, JsonElement.class);
+        if (element instanceof JsonObject) {
+            JsonObject jsonObject = element.getAsJsonObject();
+            JsonArray  jsonArray  = jsonObject.getAsJsonArray("result");
+            for (int i = 0; i < jsonArray.size(); i++) {
+                JsonObject pkgJsonObj = jsonArray.get(i).getAsJsonObject();
+                pkgsFound.add(new Pkg(pkgJsonObj.toString()));
+            }
+        }
+        pkgs.addAll(pkgsFound);
+        return pkgs;
     }
 
 

@@ -24,6 +24,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.hansolo.discocli.util.Constants;
+import eu.hansolo.discocli.util.Distribution;
 import eu.hansolo.discocli.util.Distro;
 import eu.hansolo.discocli.util.Helper;
 import eu.hansolo.discocli.util.Pkg;
@@ -56,7 +57,7 @@ import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
 
 @Command(
     name                     = "disco get",
-    mixinStandardHelpOptions = true,
+    //mixinStandardHelpOptions = true,
     description              = "Get a direct download link to JDK pkg defined by the given parameters",
     version                  = "17.0.0"
 )
@@ -141,7 +142,12 @@ public class DiscoCLI implements Callable<Integer> {
             return 1;
         } else if (response.statusCode() != 200) {
             switch(response.statusCode()) {
-                case 400 -> System.out.println(Ansi.AUTO.string("@|red Sorry, defined pkg not found in Disco API |@"));
+                case 400 -> {
+                    System.out.println(Ansi.AUTO.string("@|red Sorry, defined pkg not found in Disco API |@"));
+                    // TODO: Load all available pkgs for selected distribution and major version
+                    //Helper.getPkgsForDistributionAndMajorVersion()
+
+                }
                 default  -> System.out.println(Ansi.AUTO.string("@|red Error retrieving pkg info from Disco API |@"));
             }
             return 1;
@@ -214,6 +220,9 @@ public class DiscoCLI implements Callable<Integer> {
 
 
     public static void main(final String... args) {
+        if (null == args || args.length == 0) {
+            System.exit(0);
+        }
         int exitCode = new CommandLine(new DiscoCLI()).execute(args);
         System.exit(exitCode);
     }
