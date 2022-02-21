@@ -58,9 +58,9 @@ import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
 
 
 @Command(
-    name                     = "disco get",
-    //mixinStandardHelpOptions = true,
-    description              = "Get a direct download link to JDK pkg defined by the given parameters",
+    name                     = "discocli",
+    mixinStandardHelpOptions = true,
+    description              = "Download a JDK pkg defined by the given parameters to the current folder",
     version                  = "17.0.0"
 )
 public class DiscoCLI implements Callable<Integer> {
@@ -70,10 +70,10 @@ public class DiscoCLI implements Callable<Integer> {
 
     @Option(names = { "-i", "--info" }, description = "Info") boolean info;
 
-    @Option(names = { "-os", "--operatingsystem" }, description = "Operating System")
+    @Option(names = { "-os", "--operating-system" }, description = "Operating System (windows, linux, macos)")
     private String os = null;
 
-    @Option(names = { "-arc", "--architecture" }, description = "Architecture")
+    @Option(names = { "-arc", "--architecture" }, description = "Architecture (x64, aarch64)")
     private String arc = null;
 
     @Option(names = { "-v", "--version" }, description = "Version")
@@ -85,7 +85,7 @@ public class DiscoCLI implements Callable<Integer> {
     @Option(names = { "-pt", "--package-type" }, description = "Package type (jdk, jre)")
     private String pt = null;
 
-    @Option(names = { "-at", "--archive-type" }, description = "Archive type")
+    @Option(names = { "-at", "--archive-type" }, description = "Archive type (tar.gz, zip)")
     private String at = null;
 
     @Option(names = { "-fx", "--javafx" }, description = "Bundled with JavaFX") boolean fx;
@@ -113,8 +113,27 @@ public class DiscoCLI implements Callable<Integer> {
 
     @Override public Integer call() throws Exception {
         if (info) {
-            System.out.println("Supported distributions:");
+            System.out.println(Ansi.AUTO.string("@|bold,cyan ---------- DiscoCLI --------------- |@"));
+            System.out.println("Supported parameters with their available values.");
+            System.out.println("Keep in mind that not every distribution supports all operating systems, archive types, package types etc.");
+            System.out.println();
+            System.out.println(Ansi.AUTO.string("@|bold,cyan ---------- Distributions ---------- |@"));
             Distro.getAsListWithoutNoneAndNotFound().stream().sorted(Comparator.comparing(Distro::getUiString)).forEach(distro -> System.out.println(distro.getApiString() + distro.get().getSpacer() + "(" + distro.getUiString() + ")"));
+            System.out.println();
+            System.out.println(Ansi.AUTO.string("@|bold,cyan ---------- Operating systems ------ |@"));
+            System.out.println("windows");
+            System.out.println("linux");
+            System.out.println("macos");
+            System.out.println("alpine-linux");
+            System.out.println();
+            System.out.println(Ansi.AUTO.string("@|bold,cyan ---------- Architectures ---------- |@"));
+            Architecture.getAsList().stream().filter(architecture -> Architecture.NONE != architecture).filter(architecture -> Architecture.NOT_FOUND != architecture).forEach(architecture -> System.out.println(architecture.getApiString()));
+            System.out.println();
+            System.out.println(Ansi.AUTO.string("@|bold,cyan ---------- Archive types ---------- |@"));
+            ArchiveType.getAsList().stream().filter(archiveType -> ArchiveType.NONE != archiveType).filter(archiveType -> ArchiveType.NOT_FOUND != archiveType).forEach(archiveType -> System.out.println(archiveType.getApiString()));
+            System.out.println();
+            System.out.println(Ansi.AUTO.string("@|bold,cyan ---------- Package types ---------- |@"));
+            PackageType.getAsList().stream().filter(packageType -> PackageType.NONE != packageType).filter(packageType -> PackageType.NOT_FOUND != packageType).forEach(packageType -> System.out.println(packageType.getApiString()));
             return 0;
         }
 
@@ -293,6 +312,7 @@ public class DiscoCLI implements Callable<Integer> {
         if (null == args || args.length == 0) {
             System.exit(0);
         }
+
         int exitCode = new CommandLine(new DiscoCLI()).execute(args);
         System.exit(exitCode);
     }
