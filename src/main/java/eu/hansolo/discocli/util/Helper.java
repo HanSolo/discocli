@@ -37,6 +37,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -284,6 +286,7 @@ public class Helper {
             }
         }
         pkgs.addAll(pkgsFound);
+        Collections.sort(pkgs, Comparator.comparing(Pkg::getJavaVersion).reversed());
         return pkgs;
     }
 

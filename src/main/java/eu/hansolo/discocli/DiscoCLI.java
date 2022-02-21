@@ -44,7 +44,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -259,7 +262,7 @@ public class DiscoCLI implements Callable<Integer> {
 
         // Parse version number
         VersionNumber versionNumber;
-        if (null != v) {
+        if (null == v) {
             versionNumber = null;
         } else {
             try {
@@ -272,7 +275,7 @@ public class DiscoCLI implements Callable<Integer> {
         final String distributionParam         = "?distro=" + distro.getApiString();
         final String operatingSystemParam      = "&operating_system=" + operatingSystem.getApiString();
         final String libcTypeParam             = "&lib_c_type=" + libcType.getApiString();
-        final String versionParam              = null == versionNumber ? "&latest=available" : "&version=" + versionNumber.toString(OutputFormat.FULL_COMPRESSED, true, false);
+        final String versionParam              = null == versionNumber ? "&latest=available" : "&version=" + URLEncoder.encode(versionNumber.toString(OutputFormat.FULL_COMPRESSED, true, true), StandardCharsets.UTF_8);
         final String archiveTypeParam          = "&archive_type=" + archiveType.getApiString();
         final String javafxBundledParam        = fx ? "&javafx_bundled=true" : "";
         final String packageTypeParam          = "&package_type=" + packageType.getApiString();
@@ -302,11 +305,10 @@ public class DiscoCLI implements Callable<Integer> {
             switch(response.statusCode()) {
                 case 400 -> {
                     System.out.println(Ansi.AUTO.string("@|red \nSorry, defined pkg not found in Disco API\n |@"));
-                    // TODO: Load all available pkgs for selected distribution and major version
                     if (null != versionNumber) {
-                        List<Pkg> pkgs = Helper.getPkgsForDistributionAndMajorVersion(distro.get(), versionNumber.getFeature().getAsInt(), operatingSystem, libcType, architecture, packageType, archiveType, ea);
-                        System.out.println("Packages available for " + distro.getUiString() + " for version " + versionNumber.getFeature().getAsInt() + ":");
-                        pkgs.stream().forEach(pkg -> System.out.println(pkg.toCliString()));
+                        List<Pkg> availablePkgs = Helper.getPkgsForDistributionAndMajorVersion(distro.get(), versionNumber.getFeature().getAsInt(), operatingSystem, libcType, architecture, packageType, archiveType, ea);
+                        System.out.println(Ansi.AUTO.string("@|cyan,bold \nPackages available for " + distro.getUiString() + " for version " + versionNumber.getFeature().getAsInt() + ": |@"));
+                        availablePkgs.stream().forEach(pkg -> System.out.println(pkg.toCliString()));
                         System.out.println();
                     }
                 }
@@ -329,8 +331,15 @@ public class DiscoCLI implements Callable<Integer> {
             pkgs.addAll(pkgsFound);
             if (pkgs.isEmpty()) {
                 System.out.println(Ansi.AUTO.string("@|red \nSorry, defined pkg not found in Disco API\n |@"));
+                if (null != versionNumber) {
+                    List<Pkg> availablePkgs = Helper.getPkgsForDistributionAndMajorVersion(distro.get(), versionNumber.getFeature().getAsInt(), operatingSystem, libcType, architecture, packageType, archiveType, ea);
+                    System.out.println(Ansi.AUTO.string("@|cyan,bold \nPackages available for " + distro.getUiString() + " for version " + versionNumber.getFeature().getAsInt() + ": |@"));
+                    availablePkgs.stream().forEach(pkg -> System.out.println(pkg.toCliString()));
+                    System.out.println();
+                }
                 return 1;
             }
+            Collections.sort(pkgs, Comparator.comparing(Pkg::getJavaVersion).reversed());
 
             // Get first package found
             Pkg pkg = pkgs.get(0);
