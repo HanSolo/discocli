@@ -24,7 +24,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.hansolo.discocli.util.Constants;
-import eu.hansolo.discocli.util.Distribution;
 import eu.hansolo.discocli.util.Distro;
 import eu.hansolo.discocli.util.Helper;
 import eu.hansolo.discocli.util.Pkg;
@@ -37,7 +36,6 @@ import eu.hansolo.jdktools.versioning.VersionNumber;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Ansi;
-import picocli.CommandLine.ITypeConverter;
 import picocli.CommandLine.Option;
 
 import java.io.FileOutputStream;
@@ -119,24 +117,24 @@ public class DiscoCLI implements Callable<Integer> {
             final String yellow = "@|yellow";
             final String end    = "|@";
 
-            StringBuilder helpBuilder1 = new StringBuilder().append("usage ").append(white).append("discocli").append(end).append(" ")
-                                                            .append("[").append(yellow).append("-d").append(end).append("=<d>]").append(" ")
-                                                            .append("[").append(yellow).append("-v").append(end).append("=<v>]").append(" ")
-                                                            .append("[").append(yellow).append("-os").append(end).append("=<os>]").append(" ")
-                                                            .append("[").append(yellow).append("-arc").append(end).append("=<arc>]").append(" ")
-                                                            .append("[").append(yellow).append("-at").append(end).append("=<at>]").append(" ")
-                                                            .append("[").append(yellow).append("-pt").append(end).append("=<pt>]").append(" ")
-                                                            .append("[").append(yellow).append("-fx").append(end).append("]").append(" ")
-                                                            .append("[").append(yellow).append("-i").append(end).append("]").append(" ");
-            StringBuilder helpBuilder2 = new StringBuilder().append("Download a JDK pkg defined by the given parameters").append("\n")
-                                                            .append(yellow).append("  -d, --distribution").append(end).append("=<d> Distribution (e.g. zulu, temurin, etc.)").append("\n")
-                                                            .append(yellow).append("  -v, --version").append(end).append("=<v> Version (e.g. 17.0.2)").append("\n")
-                                                            .append(yellow).append(" -os, --operating-system").append(end).append("=<os> Operating system (e.g. windows, linux, macos)").append("\n")
-                                                            .append(yellow).append("-arc, --architecture").append(end).append("=<arc> Architecture (e.g. x64, aarch64)").append("\n")
-                                                            .append(yellow).append(" -at, --archive-type").append(end).append("=<at> Archive tpye (e.g. tar.gz, zip)").append("\n")
-                                                            .append(yellow).append(" -pt, --package-type").append(end).append("=<pt> Package type (e.g. jdk, jre)").append("\n")
-                                                            .append(yellow).append(" -fx, --javafx").append(end).append("Bundled with JavaFX").append("\n")
-                                                            .append(yellow).append("  -i, --info").append(end).append("Info about parameters").append("\n");
+            StringBuilder helpBuilder1 = new StringBuilder().append("\nusage ").append(white).append(",bold").append(" discocli").append(end).append(" ")
+                                                            .append("[").append(yellow).append(" -d").append(end).append("=<d>]").append(" ")
+                                                            .append("[").append(yellow).append(" -v").append(end).append("=<v>]").append(" ")
+                                                            .append("[").append(yellow).append(" -os").append(end).append("=<os>]").append(" ")
+                                                            .append("[").append(yellow).append(" -arc").append(end).append("=<arc>]").append(" ")
+                                                            .append("[").append(yellow).append(" -at").append(end).append("=<at>]").append(" ")
+                                                            .append("[").append(yellow).append(" -pt").append(end).append("=<pt>]").append(" ")
+                                                            .append("[").append(yellow).append(" -fx").append(end).append("]").append(" ")
+                                                            .append("[").append(yellow).append(" -i").append(end).append("]").append(" ");
+            StringBuilder helpBuilder2 = new StringBuilder().append("\nDownload a JDK pkg defined by the given parameters").append("\n")
+                                                            .append(yellow).append(" -d,   --distribution").append(end).append("=<d> Distribution (e.g. zulu, temurin, etc.)").append("\n")
+                                                            .append(yellow).append(" -v,   --version").append(end).append("=<v> Version (e.g. 17.0.2)").append("\n")
+                                                            .append(yellow).append(" -os,  --operating-system").append(end).append("=<os> Operating system (e.g. windows, linux, macos)").append("\n")
+                                                            .append(yellow).append(" -arc, --architecture").append(end).append("=<arc> Architecture (e.g. x64, aarch64)").append("\n")
+                                                            .append(yellow).append(" -at,  --archive-type").append(end).append("=<at> Archive tpye (e.g. tar.gz, zip)").append("\n")
+                                                            .append(yellow).append(" -pt,  --package-type").append(end).append("=<pt> Package type (e.g. jdk, jre)").append("\n")
+                                                            .append(yellow).append(" -fx,  --javafx").append(end).append(" Bundled with JavaFX").append("\n")
+                                                            .append(yellow).append(" -i,   --info").append(end).append(" Info about parameters").append("\n");
 
             System.out.println(Ansi.AUTO.string(helpBuilder1.toString()));
             System.out.println(Ansi.AUTO.string(helpBuilder2.toString()));
