@@ -31,11 +31,13 @@ import eu.hansolo.discocli.util.Pkg;
 import eu.hansolo.jdktools.Architecture;
 import eu.hansolo.jdktools.ArchiveType;
 import eu.hansolo.jdktools.OperatingSystem;
+import eu.hansolo.jdktools.PackageType;
 import eu.hansolo.jdktools.util.OutputFormat;
 import eu.hansolo.jdktools.versioning.VersionNumber;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Ansi;
+import picocli.CommandLine.ITypeConverter;
 import picocli.CommandLine.Option;
 
 import java.io.FileOutputStream;
@@ -80,6 +82,12 @@ public class DiscoCLI implements Callable<Integer> {
     @Option(names = { "-d", "--distribution" }, description = "Distribution")
     private String d = null;
 
+    @Option(names = { "-pt", "--package-type" }, description = "Package type (jdk, jre)")
+    private String pt = null;
+
+    @Option(names = { "-at", "--archive-type" }, description = "Archive type")
+    private String at = null;
+
     @Option(names = { "-fx", "--javafx" }, description = "Bundled with JavaFX") boolean fx;
 
     private void downloadPkg(final String url, final String filename, final long size) throws IOException {
@@ -110,18 +118,80 @@ public class DiscoCLI implements Callable<Integer> {
             return 0;
         }
 
-        final OperatingSystem operatingSystem = null == os ? eu.hansolo.toolbox.Helper.getOperatingSystem() : OperatingSystem.fromText(os);
-        if (OperatingSystem.NOT_FOUND == operatingSystem || OperatingSystem.NONE == operatingSystem) { return 1; }
+        // Parse distro
+        final Distro parsedDistro = null == d ? Distro.ZULU : Distro.fromText(d);
+        final Distro distro;
+        if (Distro.NONE == parsedDistro || Distro.NOT_FOUND == parsedDistro) {
+            distro = Distro.ZULU;
+        } else {
+            distro = parsedDistro;
+        }
+        if (Distro.NOT_FOUND == distro || Distro.NONE == distro) {
+            System.out.println(Ansi.AUTO.string("@|red Distribution cannot be found |@"));
+            return 1;
+        }
 
-        final String distributionParam         = "?distro=" + (null == d ? "zulu" : Distro.fromText(d).getApiString());
+        // Parse operating system
+        final OperatingSystem parsedOperatingSystem = null == os ? eu.hansolo.toolbox.Helper.getOperatingSystem() : OperatingSystem.fromText(os);
+        final OperatingSystem operatingSystem;
+        if (OperatingSystem.NONE == parsedOperatingSystem || OperatingSystem.NOT_FOUND == parsedOperatingSystem) {
+            operatingSystem = eu.hansolo.toolbox.Helper.getOperatingSystem();
+        } else {
+            operatingSystem = parsedOperatingSystem;
+        }
+        if (OperatingSystem.NOT_FOUND == operatingSystem || OperatingSystem.NONE == operatingSystem) {
+            System.out.println(Ansi.AUTO.string("@|red Operating system cannot be found |@"));
+            return 1;
+        }
+
+        // Parse architecture
+        final Architecture parsedArchitecture = null == arc ? Architecture.X64 : Architecture.fromText(arc);
+        final Architecture architecture;
+        if (Architecture.NONE == parsedArchitecture || Architecture.NOT_FOUND == parsedArchitecture) {
+            architecture = Architecture.X64;
+        } else {
+            architecture = parsedArchitecture;
+        }
+        if (Architecture.NONE == architecture || Architecture.NOT_FOUND == architecture) {
+            System.out.println(Ansi.AUTO.string("@|red Architecture cannot be found |@"));
+            return 1;
+        }
+
+        // Parse package type
+        final PackageType parsedPackageType = null == pt ? PackageType.JDK : PackageType.fromText(pt);
+        final PackageType packageType;
+        if (PackageType.NONE == parsedPackageType || PackageType.NOT_FOUND == parsedPackageType) {
+            packageType = PackageType.JDK;
+        } else {
+            packageType = parsedPackageType;
+        }
+        if (PackageType.NOT_FOUND == packageType || PackageType.NONE == packageType) {
+            System.out.println(Ansi.AUTO.string("@|red Package type cannot be found |@"));
+            return 1;
+        }
+
+        // Parse archive type
+        final ArchiveType parsedArchiveType = null == at ? (WINDOWS == operatingSystem ? ArchiveType.ZIP : ArchiveType.TAR_GZ) : ArchiveType.fromText(at);
+        final ArchiveType archiveType;
+        if (ArchiveType.NONE == parsedArchiveType || ArchiveType.NOT_FOUND == parsedArchiveType) {
+            archiveType = (WINDOWS == operatingSystem ? ArchiveType.ZIP : ArchiveType.TAR_GZ);
+        } else {
+            archiveType = parsedArchiveType;
+        }
+        if (ArchiveType.NOT_FOUND == archiveType || ArchiveType.NONE == archiveType) {
+            System.out.println(Ansi.AUTO.string("@|red Archive type cannot be found |@"));
+            return 1;
+        }
+
+        final String distributionParam         = "?distro=" + distro.getApiString();
         final String operatingSystemParam      = "&operating_system=" + operatingSystem.getApiString();
         final String versionParam              = null == v ? "&latest=available" : "&version=" + VersionNumber.fromText(v).toString(OutputFormat.FULL_COMPRESSED, true, false);
-        final String archiveTypeParam          = "&archive_type=" + (WINDOWS == operatingSystem ? ArchiveType.ZIP.getApiString() : ArchiveType.TAR_GZ.getApiString());
+        final String archiveTypeParam          = "&archive_type=" + archiveType.getApiString();
         final String javafxBundledParam        = fx ? "&javafx_bundled=true" : "";
-        final String packageTypeParam          = "&package_type=jdk";
+        final String packageTypeParam          = "&package_type=" + packageType.getApiString();
         final String directlyDownloadableParam = "&directlyDownloadable=true";
         final String libCTypeParam             = "&lib_c_type=" + operatingSystem.getLibCType().getApiString();
-        final String architectureParam         = "&architecture=" + (null == arc ? "x64" : Architecture.fromText(arc).getApiString());
+        final String architectureParam         = "&architecture=" + architecture.getApiString();
 
         final String request = new StringBuilder().append(Constants.DISCO_API_URL)
                                                   .append(Constants.PACKAGES_ENDPOINT)
