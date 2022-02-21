@@ -29,6 +29,7 @@ import eu.hansolo.discocli.util.Helper;
 import eu.hansolo.discocli.util.Pkg;
 import eu.hansolo.jdktools.Architecture;
 import eu.hansolo.jdktools.ArchiveType;
+import eu.hansolo.jdktools.LibCType;
 import eu.hansolo.jdktools.OperatingSystem;
 import eu.hansolo.jdktools.PackageType;
 import eu.hansolo.jdktools.util.OutputFormat;
@@ -73,6 +74,9 @@ public class DiscoCLI implements Callable<Integer> {
     @Option(names = { "-os", "--operating-system" }, description = "Operating System (windows, linux, macos)")
     private String os = null;
 
+    @Option(names = { "-lc", "--libc-type" }, description = "Lib C type (libc, glibc, c_std_lib, musl)")
+    private String lc = null;
+
     @Option(names = { "-arc", "--architecture" }, description = "Architecture (x64, aarch64)")
     private String arc = null;
 
@@ -87,6 +91,8 @@ public class DiscoCLI implements Callable<Integer> {
 
     @Option(names = { "-at", "--archive-type" }, description = "Archive type (tar.gz, zip)")
     private String at = null;
+
+    @Option(names = { "-ea", "--early-access" }, description = "Include early access builds") boolean ea;
 
     @Option(names = { "-fx", "--javafx" }, description = "Bundled with JavaFX") boolean fx;
 
@@ -121,18 +127,22 @@ public class DiscoCLI implements Callable<Integer> {
                                                             .append("[").append(yellow).append(" -d").append(end).append("=<d>]").append(" ")
                                                             .append("[").append(yellow).append(" -v").append(end).append("=<v>]").append(" ")
                                                             .append("[").append(yellow).append(" -os").append(end).append("=<os>]").append(" ")
+                                                            .append("[").append(yellow).append(" -lc").append(end).append("=<lc>]").append(" ")
                                                             .append("[").append(yellow).append(" -arc").append(end).append("=<arc>]").append(" ")
                                                             .append("[").append(yellow).append(" -at").append(end).append("=<at>]").append(" ")
                                                             .append("[").append(yellow).append(" -pt").append(end).append("=<pt>]").append(" ")
+                                                            .append("[").append(yellow).append(" -ea").append(end).append("]").append(" ")
                                                             .append("[").append(yellow).append(" -fx").append(end).append("]").append(" ")
                                                             .append("[").append(yellow).append(" -i").append(end).append("]").append(" ");
             StringBuilder helpBuilder2 = new StringBuilder().append("\nDownload a JDK pkg defined by the given parameters").append("\n")
                                                             .append(yellow).append(" -d,   --distribution").append(end).append("=<d> Distribution (e.g. zulu, temurin, etc.)").append("\n")
                                                             .append(yellow).append(" -v,   --version").append(end).append("=<v> Version (e.g. 17.0.2)").append("\n")
                                                             .append(yellow).append(" -os,  --operating-system").append(end).append("=<os> Operating system (e.g. windows, linux, macos)").append("\n")
+                                                            .append(yellow).append(" -lc,  --libc-type").append(end).append("=<lc> Lib C type (libc, glibc, c_std_lib, musl)").append("\n")
                                                             .append(yellow).append(" -arc, --architecture").append(end).append("=<arc> Architecture (e.g. x64, aarch64)").append("\n")
                                                             .append(yellow).append(" -at,  --archive-type").append(end).append("=<at> Archive tpye (e.g. tar.gz, zip)").append("\n")
                                                             .append(yellow).append(" -pt,  --package-type").append(end).append("=<pt> Package type (e.g. jdk, jre)").append("\n")
+                                                            .append(yellow).append(" -ea,  --early-access").append(end).append(" Include early access builds").append("\n")
                                                             .append(yellow).append(" -fx,  --javafx").append(end).append(" Bundled with JavaFX").append("\n")
                                                             .append(yellow).append(" -i,   --info").append(end).append(" Info about parameters").append("\n");
 
@@ -154,6 +164,9 @@ public class DiscoCLI implements Callable<Integer> {
             System.out.println("linux");
             System.out.println("macos");
             System.out.println("alpine-linux");
+            System.out.println();
+            System.out.println(Ansi.AUTO.string("@|bold,cyan ---------- Lib C types ------------ |@"));
+            LibCType.getAsList().stream().filter(libctype -> LibCType.NONE != libctype).filter(libctype -> LibCType.NOT_FOUND != libctype).forEach(libctype -> System.out.println(libctype.getApiString()));
             System.out.println();
             System.out.println(Ansi.AUTO.string("@|bold,cyan ---------- Architectures ---------- |@"));
             Architecture.getAsList().stream().filter(architecture -> Architecture.NONE != architecture).filter(architecture -> Architecture.NOT_FOUND != architecture).forEach(architecture -> System.out.println(architecture.getApiString()));
@@ -189,6 +202,19 @@ public class DiscoCLI implements Callable<Integer> {
         }
         if (OperatingSystem.NOT_FOUND == operatingSystem || OperatingSystem.NONE == operatingSystem) {
             System.out.println(Ansi.AUTO.string("@|red Operating system cannot be found |@"));
+            return 1;
+        }
+
+        // Parse lib c type
+        final LibCType parsedLibcType = null == lc ? operatingSystem.getLibCType() : LibCType.fromText(lc);
+        final LibCType libcType;
+        if (LibCType.NONE == parsedLibcType || LibCType.NOT_FOUND == parsedLibcType) {
+            libcType = operatingSystem.getLibCType();
+        } else {
+            libcType = parsedLibcType;
+        }
+        if (LibCType.NONE == libcType || LibCType.NOT_FOUND == libcType) {
+            System.out.println(Ansi.AUTO.string("@|red Lib C type cannot be found |@"));
             return 1;
         }
 
@@ -231,27 +257,41 @@ public class DiscoCLI implements Callable<Integer> {
             return 1;
         }
 
+        // Parse version number
+        VersionNumber versionNumber;
+        if (null != v) {
+            versionNumber = null;
+        } else {
+            try {
+                versionNumber = VersionNumber.fromText(v);
+            } catch (IllegalArgumentException e) {
+                versionNumber = null;
+            }
+        }
+
         final String distributionParam         = "?distro=" + distro.getApiString();
         final String operatingSystemParam      = "&operating_system=" + operatingSystem.getApiString();
-        final String versionParam              = null == v ? "&latest=available" : "&version=" + VersionNumber.fromText(v).toString(OutputFormat.FULL_COMPRESSED, true, false);
+        final String libcTypeParam             = "&lib_c_type=" + libcType.getApiString();
+        final String versionParam              = null == versionNumber ? "&latest=available" : "&version=" + versionNumber.toString(OutputFormat.FULL_COMPRESSED, true, false);
         final String archiveTypeParam          = "&archive_type=" + archiveType.getApiString();
         final String javafxBundledParam        = fx ? "&javafx_bundled=true" : "";
         final String packageTypeParam          = "&package_type=" + packageType.getApiString();
         final String directlyDownloadableParam = "&directlyDownloadable=true";
-        final String libCTypeParam             = "&lib_c_type=" + operatingSystem.getLibCType().getApiString();
         final String architectureParam         = "&architecture=" + architecture.getApiString();
+        final String releaseStatusParam        = ea ? "&release_status=ea&release_status=ga" : "&release_status=ga";
 
         final String request = new StringBuilder().append(Constants.DISCO_API_URL)
                                                   .append(Constants.PACKAGES_ENDPOINT)
                                                   .append(distributionParam)
                                                   .append(operatingSystemParam)
-                                                  .append(libCTypeParam)
+                                                  .append(libcTypeParam)
                                                   .append(architectureParam)
                                                   .append(versionParam)
                                                   .append(archiveTypeParam)
                                                   .append(javafxBundledParam)
                                                   .append(packageTypeParam)
                                                   .append(directlyDownloadableParam)
+                                                  .append(releaseStatusParam)
                                                   .toString();
 
         HttpResponse<String> response = Helper.get(request, Constants.USER_AGENT);
@@ -261,12 +301,16 @@ public class DiscoCLI implements Callable<Integer> {
         } else if (response.statusCode() != 200) {
             switch(response.statusCode()) {
                 case 400 -> {
-                    System.out.println(Ansi.AUTO.string("@|red Sorry, defined pkg not found in Disco API |@"));
+                    System.out.println(Ansi.AUTO.string("@|red \nSorry, defined pkg not found in Disco API\n |@"));
                     // TODO: Load all available pkgs for selected distribution and major version
-                    //Helper.getPkgsForDistributionAndMajorVersion()
-
+                    if (null != versionNumber) {
+                        List<Pkg> pkgs = Helper.getPkgsForDistributionAndMajorVersion(distro.get(), versionNumber.getFeature().getAsInt(), operatingSystem, libcType, architecture, packageType, archiveType, ea);
+                        System.out.println("Packages available for " + distro.getUiString() + " for version " + versionNumber.getFeature().getAsInt() + ":");
+                        pkgs.stream().forEach(pkg -> System.out.println(pkg.toCliString()));
+                        System.out.println();
+                    }
                 }
-                default  -> System.out.println(Ansi.AUTO.string("@|red Error retrieving pkg info from Disco API |@"));
+                default  -> System.out.println(Ansi.AUTO.string("@|red \nError retrieving pkg info from Disco API\n |@"));
             }
             return 1;
         } else {
@@ -284,7 +328,7 @@ public class DiscoCLI implements Callable<Integer> {
             }
             pkgs.addAll(pkgsFound);
             if (pkgs.isEmpty()) {
-                System.out.println(Ansi.AUTO.string("@|red Sorry, defined pkg not found in Disco API |@"));
+                System.out.println(Ansi.AUTO.string("@|red \nSorry, defined pkg not found in Disco API\n |@"));
                 return 1;
             }
 
@@ -295,10 +339,10 @@ public class DiscoCLI implements Callable<Integer> {
             String               urlRequest  = new StringBuilder().append(Constants.DISCO_API_URL).append(Constants.IDS_ENDPOINT).append(pkg.getId()).toString();
             HttpResponse<String> urlResponse = Helper.get(urlRequest, Constants.USER_AGENT);
             if (null == urlResponse) {
-                System.out.println(Ansi.AUTO.string("@|red Error retrieving pkg info from Disco API |@"));
+                System.out.println(Ansi.AUTO.string("@|red \nError retrieving pkg info from Disco API\n |@"));
                 return 1;
             } else if (urlResponse.statusCode() != 200) {
-                System.out.println(Ansi.AUTO.string("@|red Error retrieving pkg info from Disco API with status code " + response.statusCode() + " |@"));
+                System.out.println(Ansi.AUTO.string("@|red \nError retrieving pkg info from Disco API with status code " + response.statusCode() + "\n |@"));
                 return 1;
             } else {
                 String      packageInfoBody    = urlResponse.body();
@@ -316,18 +360,18 @@ public class DiscoCLI implements Callable<Integer> {
                         //final String        checksum          = packageInfoJson.has(Constants.FIELD_CHECKSUM)            ? packageInfoJson.get(Constants.FIELD_CHECKSUM).getAsString()                              : "";
                         //final HashAlgorithm checksumType      = packageInfoJson.has(Constants.FIELD_CHECKSUM_TYPE) ? HashAlgorithm.fromText(packageInfoJson.get(Constants.FIELD_CHECKSUM_TYPE).getAsString()) : HashAlgorithm.NONE;
                         if (null == filename) { return 1; }
-                        System.out.println("Downloading " + pkg.getFileName() + ":");
+                        System.out.println("\nDownloading " + pkg.getFileName() + ":");
                         try {
                             downloadPkg(directDownloadUri, pkg.getFileName(), pkg.getSize());
-                            System.out.println(Ansi.AUTO.string("@|green \nSuccessfully dowloaded JDK pkg |@"));
+                            System.out.println(Ansi.AUTO.string("@|green \nSuccessfully dowloaded JDK pkg\n |@"));
 
                             return 0;
                         } catch (IOException e) {
-                            System.out.println(Ansi.AUTO.string("@|red \nError downloading " + pkg.getFileName() + " from " + directDownloadUri + " |@"));
+                            System.out.println(Ansi.AUTO.string("@|red \nError downloading " + pkg.getFileName() + " from " + directDownloadUri + "\n |@"));
                             return 1;
                         }
                     } else {
-                        System.out.println(Ansi.AUTO.string("@|red Error retrieving direct download uri |@"));
+                        System.out.println(Ansi.AUTO.string("@|red \nError retrieving direct download uri\n |@"));
                         return 1;
                     }
                 }

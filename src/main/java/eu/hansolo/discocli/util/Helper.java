@@ -24,6 +24,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.hansolo.jdktools.Architecture;
 import eu.hansolo.jdktools.ArchiveType;
+import eu.hansolo.jdktools.LibCType;
 import eu.hansolo.jdktools.OperatingSystem;
 import eu.hansolo.jdktools.PackageType;
 
@@ -249,12 +250,18 @@ public class Helper {
         }
     }
 
-    public static List<Pkg> getPkgsForDistributionAndMajorVersion(final Distribution distribution, final int majorVersion, final OperatingSystem operatingSystem, final Architecture architecture, final PackageType packageType, final ArchiveType archiveType, final boolean includeEA) {
+    public static List<Pkg> getPkgsForDistributionAndMajorVersion(final Distribution distribution, final int majorVersion, final OperatingSystem operatingSystem, final LibCType libcType, final Architecture architecture, final PackageType packageType, final ArchiveType archiveType, final boolean includeEA) {
         StringBuilder builder = new StringBuilder().append(Constants.DISCO_API_URL).append(Constants.PACKAGES_ENDPOINT).append("?distro=").append(distribution.getApiString()).append("&version=").append(majorVersion);
-        if (null != operatingSystem) { builder.append("&operating_system=").append(operatingSystem.getApiString()); }
+        if (null != operatingSystem) {
+            builder.append("&operating_system=").append(operatingSystem.getApiString());
+            if (null != libcType) {
+                builder.append("&lib_c_type=").append(libcType.getApiString());
+            }
+        }
         if (null != architecture)    { builder.append("&architecture=").append(architecture.getApiString()); }
         if (null != packageType)     { builder.append("&package_type=").append(packageType.getApiString()); }
         if (null != archiveType)     { builder.append("&archive_type=").append(archiveType.getApiString()); }
+        builder.append(includeEA ? "&release_status=ea&release_status=ga" : "&release_status=ga");
         builder.append("&latest=all_of_version");
 
         String request = builder.toString();
@@ -269,10 +276,10 @@ public class Helper {
         Gson        gson      = new Gson();
         JsonElement element   = gson.fromJson(bodyText, JsonElement.class);
         if (element instanceof JsonObject) {
-            JsonObject jsonObject = element.getAsJsonObject();
-            JsonArray  jsonArray  = jsonObject.getAsJsonArray("result");
+            final JsonObject jsonObject = element.getAsJsonObject();
+            final JsonArray  jsonArray  = jsonObject.getAsJsonArray("result");
             for (int i = 0; i < jsonArray.size(); i++) {
-                JsonObject pkgJsonObj = jsonArray.get(i).getAsJsonObject();
+                final JsonObject pkgJsonObj = jsonArray.get(i).getAsJsonObject();
                 pkgsFound.add(new Pkg(pkgJsonObj.toString()));
             }
         }

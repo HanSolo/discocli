@@ -204,7 +204,18 @@ public class Pkg {
     }
 
     public String toCliString() {
-        return new StringBuilder().append(distribution.getApiString()).append(",").append(javaVersion.toString(true)).append(",").append(operatingSystem.getApiString()).append(",").append(architecture.getApiString()).append(",").append(archiveType.getApiString()).toString();
+        //discocli -d zulu -v 17.0.2 -os macos -lc libc -arc aarch64 -at tar.gz -pt jdk
+        return new StringBuilder().append("discocli")
+                                  .append(" -d ").append(distribution.getApiString())
+                                  .append(" -v ").append(javaVersion.toString(true))
+                                  .append(" -os ").append(operatingSystem.getApiString())
+                                  .append(" -lc ").append(libcType.getApiString())
+                                  .append(" -arc ").append(architecture.getApiString())
+                                  .append(" -at ").append(archiveType.getApiString())
+                                  .append(" -pt ").append(packageType.getApiString())
+                                  .append(javafxBundled == true ? " -fx" : "")
+                                  .append(ReleaseStatus.EA == releaseStatus ? " -ea" : "")
+                                  .toString();
     }
 
     @Override public String toString() {
