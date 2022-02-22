@@ -104,21 +104,21 @@ Download a JDK pkg defined by the given parameters:
 
 -lc,  --libc-type=<lc>        Lib C type (libc, glibc, c_std_lib, musl)
 
--arc, --architecture=<arc>   Architecture (e.g. x64, aarch64)
+-arc, --architecture=<arc>    Architecture (e.g. x64, aarch64)
 
--at,  --archive-type=<at>    Archive tpye (e.g. tar.gz, zip)
+-at,  --archive-type=<at>     Archive tpye (e.g. tar.gz, zip)
 
--pt,  --package-type=<pt>    Package type (e.g. jdk, jre)
+-pt,  --package-type=<pt>     Package type (e.g. jdk, jre)
 
--ea,  --early-access         Include early access builds
+-ea,  --early-access          Include early access builds
 
--fx,  --javafx               Bundled with JavaFX
+-fx,  --javafx                Bundled with JavaFX
 
--f,   --find                 Find available JDK pkgs for given parameters
+-f,   --find                  Find available JDK pkgs for given parameters
 
--latest                      Latest available for given version number
+-latest                       Latest available for given version number
 
--i,   --info                 Info about parameters
+-i,   --info                  Info about parameters
 ```
 
 ####Parameters
