@@ -30,8 +30,10 @@ import eu.hansolo.jdktools.PackageType;
 import eu.hansolo.jdktools.ReleaseStatus;
 import eu.hansolo.jdktools.TermOfSupport;
 import eu.hansolo.jdktools.Verification;
+import eu.hansolo.jdktools.util.OutputFormat;
 import eu.hansolo.jdktools.versioning.Semver;
 import eu.hansolo.jdktools.versioning.VersionNumber;
+import picocli.CommandLine.Help.Ansi;
 
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -205,16 +207,16 @@ public class Pkg {
 
     public String toCliString() {
         //discocli -d zulu -v 17.0.2 -os macos -lc libc -arc aarch64 -at tar.gz -pt jdk
-        return new StringBuilder().append("discocli")
-                                  .append(" -d ").append(distribution.getApiString())
-                                  .append(" -v ").append(javaVersion.toString(true))
-                                  .append(" -os ").append(operatingSystem.getApiString())
-                                  .append(" -lc ").append(libcType.getApiString())
-                                  .append(" -arc ").append(architecture.getApiString())
-                                  .append(" -at ").append(archiveType.getApiString())
-                                  .append(" -pt ").append(packageType.getApiString())
-                                  .append(javafxBundled == true ? " -fx" : "")
-                                  .append(ReleaseStatus.EA == releaseStatus ? " -ea" : "")
+        return new StringBuilder().append(Ansi.AUTO.string("@|cyan discocli|@"))
+                                  .append(Ansi.AUTO.string("@|yellow  -d |@")).append(distribution.getApiString())
+                                  .append(Ansi.AUTO.string("@|yellow  -v |@")).append(javaVersion.getVersionNumber().toString(OutputFormat.REDUCED_COMPRESSED, true, ReleaseStatus.EA == releaseStatus))
+                                  .append(Ansi.AUTO.string("@|yellow  -os |@")).append(operatingSystem.getApiString())
+                                  .append(Ansi.AUTO.string("@|yellow  -lc |@")).append(libcType.getApiString())
+                                  .append(Ansi.AUTO.string("@|yellow  -arc |@")).append(architecture.getApiString())
+                                  .append(Ansi.AUTO.string("@|yellow  -at |@")).append(archiveType.getApiString())
+                                  .append(Ansi.AUTO.string("@|yellow  -pt |@")).append(packageType.getApiString())
+                                  .append(javafxBundled == true ? Ansi.AUTO.string("@|yellow  -fx|@") : "")
+                                  .append(ReleaseStatus.EA == releaseStatus ? Ansi.AUTO.string("@|yellow  -ea|@") : "")
                                   .toString();
     }
 

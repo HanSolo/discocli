@@ -21,7 +21,7 @@ Get help by using the ```-h or --help``` parameter as follows:
 
 ```shell
 Using the jar:
-java -jar discocli-17.0.0.jar -h
+java -jar discocli-17.0.1.jar -h
 
 Using the binary:
 discocli -h
