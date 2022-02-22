@@ -30,10 +30,12 @@ import eu.hansolo.discocli.util.Pkg;
 import eu.hansolo.jdktools.Architecture;
 import eu.hansolo.jdktools.ArchiveType;
 import eu.hansolo.jdktools.LibCType;
+import eu.hansolo.jdktools.OperatingMode;
 import eu.hansolo.jdktools.OperatingSystem;
 import eu.hansolo.jdktools.PackageType;
 import eu.hansolo.jdktools.util.OutputFormat;
 import eu.hansolo.jdktools.versioning.VersionNumber;
+import eu.hansolo.toolbox.tuples.Triplet;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Ansi;
@@ -54,17 +56,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
 
 
 @Command(
-    name                     = "discocli",
-    //mixinStandardHelpOptions = true,
-    description              = "Download a JDK pkg defined by the given parameters",
-    version                  = "17.0.0"
+    name        = "discocli",
+    description = "Download a JDK pkg defined by the given parameters",
+    version     = "17.0.1"
 )
 public class DiscoCLI implements Callable<Integer> {
 
@@ -191,6 +191,8 @@ public class DiscoCLI implements Callable<Integer> {
             return 0;
         }
 
+        final Triplet<OperatingSystem, Architecture, OperatingMode> sysInfo = eu.hansolo.toolbox.Helper.getOperaringSystemArchitectureOperatingMode();
+
         // Parse distro
         final Distro parsedDistro = null == d ? Distro.ZULU : Distro.fromText(d);
         final Distro distro;
@@ -200,12 +202,12 @@ public class DiscoCLI implements Callable<Integer> {
             distro = parsedDistro;
         }
         if (Distro.NOT_FOUND == distro || Distro.NONE == distro) {
-            System.out.println(Ansi.AUTO.string("@|red Distribution cannot be found |@"));
+            System.out.println(Ansi.AUTO.string("@|red \nDistribution cannot be found |@"));
             return 1;
         }
 
         // Parse operating system
-        final OperatingSystem parsedOperatingSystem = null == os ? eu.hansolo.toolbox.Helper.getOperatingSystem() : OperatingSystem.fromText(os);
+        final OperatingSystem parsedOperatingSystem = null == os ? sysInfo.getA() : OperatingSystem.fromText(os);
         final OperatingSystem operatingSystem;
         if (find && null == os) {
             operatingSystem = OperatingSystem.NONE;
@@ -215,7 +217,7 @@ public class DiscoCLI implements Callable<Integer> {
             operatingSystem = parsedOperatingSystem;
         }
         if (!find && (OperatingSystem.NOT_FOUND == operatingSystem || OperatingSystem.NONE == operatingSystem)) {
-            System.out.println(Ansi.AUTO.string("@|red Operating system cannot be found |@"));
+            System.out.println(Ansi.AUTO.string("@|red \nOperating system cannot be found |@"));
             return 1;
         }
 
@@ -230,12 +232,13 @@ public class DiscoCLI implements Callable<Integer> {
             libcType = parsedLibcType;
         }
         if (!find && (LibCType.NONE == libcType || LibCType.NOT_FOUND == libcType)) {
-            System.out.println(Ansi.AUTO.string("@|red Lib C type cannot be found |@"));
+            System.out.println(Ansi.AUTO.string("@|red \nLib C type cannot be found |@"));
             return 1;
         }
 
         // Parse architecture
-        final Architecture parsedArchitecture = null == arc ? Architecture.X64 : Architecture.fromText(arc);
+        final boolean rosetta2 = OperatingSystem.MACOS == sysInfo.getA() && OperatingMode.EMULATED == sysInfo.getC();
+        final Architecture parsedArchitecture = null == arc ? rosetta2 ? Architecture.AARCH64 : sysInfo.getB() : Architecture.fromText(arc);
         final Architecture architecture;
         if (find && null == arc) {
             architecture = Architecture.NONE;
@@ -245,7 +248,7 @@ public class DiscoCLI implements Callable<Integer> {
             architecture = parsedArchitecture;
         }
         if (!find && (Architecture.NONE == architecture || Architecture.NOT_FOUND == architecture)) {
-            System.out.println(Ansi.AUTO.string("@|red Architecture cannot be found |@"));
+            System.out.println(Ansi.AUTO.string("@|red \nArchitecture cannot be found |@"));
             return 1;
         }
 
@@ -260,7 +263,7 @@ public class DiscoCLI implements Callable<Integer> {
             packageType = parsedPackageType;
         }
         if (!find && (PackageType.NOT_FOUND == packageType || PackageType.NONE == packageType)) {
-            System.out.println(Ansi.AUTO.string("@|red Package type cannot be found |@"));
+            System.out.println(Ansi.AUTO.string("@|red \nPackage type cannot be found |@"));
             return 1;
         }
 
@@ -275,7 +278,7 @@ public class DiscoCLI implements Callable<Integer> {
             archiveType = parsedArchiveType;
         }
         if (!find && (ArchiveType.NOT_FOUND == archiveType || ArchiveType.NONE == archiveType)) {
-            System.out.println(Ansi.AUTO.string("@|red Archive type cannot be found |@"));
+            System.out.println(Ansi.AUTO.string("@|red \nArchive type cannot be found |@"));
             return 1;
         }
 
@@ -331,7 +334,7 @@ public class DiscoCLI implements Callable<Integer> {
 
         HttpResponse<String> response = Helper.get(request, Constants.USER_AGENT);
         if (null == response) {
-            System.out.println(Ansi.AUTO.string("@|red Error retrieving pkg info from Disco API |@"));
+            System.out.println(Ansi.AUTO.string("@|red \nError retrieving pkg info from Disco API |@"));
             return 1;
         } else if (response.statusCode() != 200) {
             switch(response.statusCode()) {
@@ -404,10 +407,6 @@ public class DiscoCLI implements Callable<Integer> {
                         final JsonObject    packageInfoJson   = jsonArray.get(0).getAsJsonObject();
                         final String        filename          = packageInfoJson.has(Constants.FIELD_FILENAME)            ? packageInfoJson.get(Constants.FIELD_FILENAME).getAsString()                              : "";
                         final String        directDownloadUri = packageInfoJson.has(Constants.FIELD_DIRECT_DOWNLOAD_URI) ? packageInfoJson.get(Constants.FIELD_DIRECT_DOWNLOAD_URI).getAsString()                   : "";
-                        //final String        signatureUri      = packageInfoJson.has(Constants.FIELD_SIGNATURE_URI)       ? packageInfoJson.get(Constants.FIELD_SIGNATURE_URI).getAsString()                         : "";
-                        //final String        checksumUri       = packageInfoJson.has(Constants.FIELD_CHECKSUM_URI)        ? packageInfoJson.get(Constants.FIELD_CHECKSUM_URI).getAsString()                          : "";
-                        //final String        checksum          = packageInfoJson.has(Constants.FIELD_CHECKSUM)            ? packageInfoJson.get(Constants.FIELD_CHECKSUM).getAsString()                              : "";
-                        //final HashAlgorithm checksumType      = packageInfoJson.has(Constants.FIELD_CHECKSUM_TYPE) ? HashAlgorithm.fromText(packageInfoJson.get(Constants.FIELD_CHECKSUM_TYPE).getAsString()) : HashAlgorithm.NONE;
                         if (null == filename) { return 1; }
                         System.out.println("\nDownloading " + pkg.getFileName() + ":");
                         try {
@@ -431,10 +430,7 @@ public class DiscoCLI implements Callable<Integer> {
 
 
     public static void main(final String... args) {
-        if (null == args || args.length == 0) {
-            System.exit(0);
-        }
-
+        if (null == args || args.length == 0) { System.exit(0); }
         int exitCode = new CommandLine(new DiscoCLI()).execute(args);
         System.exit(exitCode);
     }

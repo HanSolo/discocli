@@ -30,7 +30,7 @@ discocli -h
 
 ####Info:
 If not specified, the distribution will default to Zulu and the 
-archive type will default to ```tar.gz``` for Linux,Mac and to ```zip``` for Windows.
+archive type will default to ```tar.gz``` for Linux, Mac and to ```zip``` for Windows.
 If you do not specify the operatings system discocli will try to detect
 the current operating system and use it.
 In case you would like to download a version for Alpine Linux, you can
