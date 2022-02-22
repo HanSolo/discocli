@@ -54,6 +54,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
@@ -73,6 +74,8 @@ public class DiscoCLI implements Callable<Integer> {
     @Option(names = { "-h", "--help" }, description = "Help") boolean help;
 
     @Option(names = { "-i", "--info" }, description = "Info") boolean info;
+
+    @Option(names = { "-f", "--find" }, description = "Find available JDK pkgs for given parameters") boolean find;
 
     @Option(names = { "-os", "--operating-system" }, description = "Operating System (windows, linux, macos)")
     private String os = null;
@@ -139,7 +142,8 @@ public class DiscoCLI implements Callable<Integer> {
                                                             .append("[").append(yellow).append(" -ea").append(end).append("]").append(" ")
                                                             .append("[").append(yellow).append(" -fx").append(end).append("]").append(" ")
                                                             .append("[").append(yellow).append(" -latest").append(end).append("]").append(" ")
-                                                            .append("[").append(yellow).append(" -i").append(end).append("]").append(" ");
+                                                            .append("[").append(yellow).append(" -i").append(end).append("]").append(" ")
+                                                            .append("[").append(yellow).append(" -f").append(end).append("]");
             StringBuilder helpBuilder2 = new StringBuilder().append("\nDownload a JDK pkg defined by the given parameters").append("\n")
                                                             .append(yellow).append(" -d,   --distribution").append(end).append("=<d> Distribution (e.g. zulu, temurin, etc.)").append("\n")
                                                             .append(yellow).append(" -v,   --version").append(end).append("=<v> Version (e.g. 17.0.2)").append("\n")
@@ -150,6 +154,7 @@ public class DiscoCLI implements Callable<Integer> {
                                                             .append(yellow).append(" -pt,  --package-type").append(end).append("=<pt> Package type (e.g. jdk, jre)").append("\n")
                                                             .append(yellow).append(" -ea,  --early-access").append(end).append(" Include early access builds").append("\n")
                                                             .append(yellow).append(" -fx,  --javafx").append(end).append(" Bundled with JavaFX").append("\n")
+                                                            .append(yellow).append(" -f,   --find").append(end).append(" Find available JDK pkgs for given parameters").append("\n")
                                                             .append(yellow).append(" -latest").append(end).append(" Latest available for given version number").append("\n")
                                                             .append(yellow).append(" -i,   --info").append(end).append(" Info about parameters").append("\n");
 
@@ -202,12 +207,14 @@ public class DiscoCLI implements Callable<Integer> {
         // Parse operating system
         final OperatingSystem parsedOperatingSystem = null == os ? eu.hansolo.toolbox.Helper.getOperatingSystem() : OperatingSystem.fromText(os);
         final OperatingSystem operatingSystem;
-        if (OperatingSystem.NONE == parsedOperatingSystem || OperatingSystem.NOT_FOUND == parsedOperatingSystem) {
+        if (find && null == os) {
+            operatingSystem = OperatingSystem.NONE;
+        } else if (OperatingSystem.NONE == parsedOperatingSystem || OperatingSystem.NOT_FOUND == parsedOperatingSystem) {
             operatingSystem = eu.hansolo.toolbox.Helper.getOperatingSystem();
         } else {
             operatingSystem = parsedOperatingSystem;
         }
-        if (OperatingSystem.NOT_FOUND == operatingSystem || OperatingSystem.NONE == operatingSystem) {
+        if (!find && OperatingSystem.NOT_FOUND == operatingSystem || OperatingSystem.NONE == operatingSystem) {
             System.out.println(Ansi.AUTO.string("@|red Operating system cannot be found |@"));
             return 1;
         }
@@ -215,12 +222,14 @@ public class DiscoCLI implements Callable<Integer> {
         // Parse lib c type
         final LibCType parsedLibcType = null == lc ? operatingSystem.getLibCType() : LibCType.fromText(lc);
         final LibCType libcType;
-        if (LibCType.NONE == parsedLibcType || LibCType.NOT_FOUND == parsedLibcType) {
+        if (find && OperatingSystem.NONE == operatingSystem) {
+            libcType = LibCType.NONE;
+        } else if (LibCType.NONE == parsedLibcType || LibCType.NOT_FOUND == parsedLibcType) {
             libcType = operatingSystem.getLibCType();
         } else {
             libcType = parsedLibcType;
         }
-        if (LibCType.NONE == libcType || LibCType.NOT_FOUND == libcType) {
+        if (!find && LibCType.NONE == libcType || LibCType.NOT_FOUND == libcType) {
             System.out.println(Ansi.AUTO.string("@|red Lib C type cannot be found |@"));
             return 1;
         }
@@ -228,12 +237,14 @@ public class DiscoCLI implements Callable<Integer> {
         // Parse architecture
         final Architecture parsedArchitecture = null == arc ? Architecture.X64 : Architecture.fromText(arc);
         final Architecture architecture;
-        if (Architecture.NONE == parsedArchitecture || Architecture.NOT_FOUND == parsedArchitecture) {
+        if (find && null == arc) {
+            architecture = Architecture.NONE;
+        } else if (Architecture.NONE == parsedArchitecture || Architecture.NOT_FOUND == parsedArchitecture) {
             architecture = Architecture.X64;
         } else {
             architecture = parsedArchitecture;
         }
-        if (Architecture.NONE == architecture || Architecture.NOT_FOUND == architecture) {
+        if (!find && Architecture.NONE == architecture || Architecture.NOT_FOUND == architecture) {
             System.out.println(Ansi.AUTO.string("@|red Architecture cannot be found |@"));
             return 1;
         }
@@ -241,12 +252,14 @@ public class DiscoCLI implements Callable<Integer> {
         // Parse package type
         final PackageType parsedPackageType = null == pt ? PackageType.JDK : PackageType.fromText(pt);
         final PackageType packageType;
-        if (PackageType.NONE == parsedPackageType || PackageType.NOT_FOUND == parsedPackageType) {
+        if (find && null == pt) {
+            packageType = PackageType.NONE;
+        } else if (PackageType.NONE == parsedPackageType || PackageType.NOT_FOUND == parsedPackageType) {
             packageType = PackageType.JDK;
         } else {
             packageType = parsedPackageType;
         }
-        if (PackageType.NOT_FOUND == packageType || PackageType.NONE == packageType) {
+        if (!find && PackageType.NOT_FOUND == packageType || PackageType.NONE == packageType) {
             System.out.println(Ansi.AUTO.string("@|red Package type cannot be found |@"));
             return 1;
         }
@@ -254,12 +267,14 @@ public class DiscoCLI implements Callable<Integer> {
         // Parse archive type
         final ArchiveType parsedArchiveType = null == at ? (WINDOWS == operatingSystem ? ArchiveType.ZIP : ArchiveType.TAR_GZ) : ArchiveType.fromText(at);
         final ArchiveType archiveType;
-        if (ArchiveType.NONE == parsedArchiveType || ArchiveType.NOT_FOUND == parsedArchiveType) {
+        if (find && null == at) {
+            archiveType = ArchiveType.NONE;
+        } else if (ArchiveType.NONE == parsedArchiveType || ArchiveType.NOT_FOUND == parsedArchiveType) {
             archiveType = (WINDOWS == operatingSystem ? ArchiveType.ZIP : ArchiveType.TAR_GZ);
         } else {
             archiveType = parsedArchiveType;
         }
-        if (ArchiveType.NOT_FOUND == archiveType || ArchiveType.NONE == archiveType) {
+        if (!find && ArchiveType.NOT_FOUND == archiveType || ArchiveType.NONE == archiveType) {
             System.out.println(Ansi.AUTO.string("@|red Archive type cannot be found |@"));
             return 1;
         }
@@ -277,21 +292,25 @@ public class DiscoCLI implements Callable<Integer> {
         }
 
         if (null == versionNumber && latest) {
-            System.out.println(Ansi.AUTO.string("@|red -latest only works with a given version number |@"));
+            System.out.println(Ansi.AUTO.string("@|red \n -latest only works with a given version number |@"));
+            return 1;
+        }
+        if (null == versionNumber && null == distro && find) {
+            System.out.println(Ansi.AUTO.string("@|red \n -find only works with a given version number and distribution |@"));
             return 1;
         }
 
         final String distributionParam         = "?distro=" + distro.getApiString();
-        final String operatingSystemParam      = "&operating_system=" + operatingSystem.getApiString();
-        final String libcTypeParam             = "&lib_c_type=" + libcType.getApiString();
         final String versionParam              = null == versionNumber ? "" : "&version=" + URLEncoder.encode(versionNumber.toString(OutputFormat.FULL_COMPRESSED, true, true), StandardCharsets.UTF_8);
-        final String latestParam               = null == versionNumber || latest ? "&latest=available" : "";
-        final String archiveTypeParam          = "&archive_type=" + archiveType.getApiString();
+        final String operatingSystemParam      = OperatingSystem.NONE == operatingSystem ? "" : "&operating_system=" + operatingSystem.getApiString();
+        final String libcTypeParam             = LibCType.NONE        == libcType        ? "" : "&lib_c_type=" + libcType.getApiString();
+        final String architectureParam         = Architecture.NONE    == architecture    ? "" : "&architecture=" + architecture.getApiString();
+        final String archiveTypeParam          = ArchiveType.NONE     == archiveType     ? "" : "&archive_type=" + archiveType.getApiString();
+        final String packageTypeParam          = PackageType.NONE     == packageType     ? "" : "&package_type=" + packageType.getApiString();
+        final String latestParam               = find ? "" : ((null == versionNumber || latest) ? "&latest=available" : "");
         final String javafxBundledParam        = fx ? "&javafx_bundled=true" : "";
-        final String packageTypeParam          = "&package_type=" + packageType.getApiString();
-        final String directlyDownloadableParam = "&directlyDownloadable=true";
-        final String architectureParam         = "&architecture=" + architecture.getApiString();
         final String releaseStatusParam        = ea ? "&release_status=ea&release_status=ga" : "&release_status=ga";
+        final String directlyDownloadableParam = "&directlyDownloadable=true";
 
         final String request = new StringBuilder().append(Constants.DISCO_API_URL)
                                                   .append(Constants.PACKAGES_ENDPOINT)
@@ -319,7 +338,7 @@ public class DiscoCLI implements Callable<Integer> {
                     if (null != versionNumber) {
                         List<Pkg> availablePkgs = Helper.getPkgsForDistributionAndMajorVersion(distro.get(), versionNumber.getFeature().getAsInt(), operatingSystem, libcType, architecture, packageType, archiveType, ea);
                         System.out.println(Ansi.AUTO.string("@|cyan,bold \nPackages available for " + distro.getUiString() + " for version " + versionNumber.getFeature().getAsInt() + ": |@"));
-                        availablePkgs.stream().forEach(pkg -> System.out.println(pkg.toCliString()));
+                        availablePkgs.stream().sorted(Comparator.comparing(Pkg::getOperatingSystem).thenComparing(Pkg::getJavaVersion).reversed()).forEach(pkg -> System.out.println(pkg.toCliString()));
                         System.out.println();
                     }
                 }
@@ -345,12 +364,20 @@ public class DiscoCLI implements Callable<Integer> {
                 if (null != versionNumber) {
                     List<Pkg> availablePkgs = Helper.getPkgsForDistributionAndMajorVersion(distro.get(), versionNumber.getFeature().getAsInt(), operatingSystem, libcType, architecture, packageType, archiveType, ea);
                     System.out.println(Ansi.AUTO.string("@|cyan,bold \nPackages available for " + distro.getUiString() + " for version " + versionNumber.getFeature().getAsInt() + ": |@"));
-                    availablePkgs.stream().forEach(pkg -> System.out.println(pkg.toCliString()));
+                    availablePkgs.stream().sorted(Comparator.comparing(Pkg::getOperatingSystem).thenComparing(Pkg::getJavaVersion).reversed()).forEach(pkg -> System.out.println(pkg.toCliString()));
                     System.out.println();
                 }
                 return 1;
             }
-            Collections.sort(pkgs, Comparator.comparing(Pkg::getJavaVersion).reversed());
+
+            if (find) {
+                System.out.println(Ansi.AUTO.string("@|cyan,bold \nPackages found for " + distro.getUiString() + " for version " + versionNumber.getFeature().getAsInt() + ": |@"));
+                pkgs.stream().sorted(Comparator.comparing(Pkg::getOperatingSystem).thenComparing(Pkg::getJavaVersion).reversed()).forEach(pkg -> System.out.println(pkg.toCliString()));
+                System.out.println();
+                return 1;
+            } else {
+                Collections.sort(pkgs, Comparator.comparing(Pkg::getJavaVersion).reversed());
+            }
 
             // Get first package found
             Pkg pkg = pkgs.get(0);

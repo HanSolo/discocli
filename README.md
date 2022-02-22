@@ -1,68 +1,124 @@
 ## Disco CLI
 
-Disco CLI is a command line interface for the foojay.io Disco API
+Disco CLI is a command line interface for the [foojay.io](https://foojay.io) [Disco API](https://github.com/foojayio/discoapi)
 
-You can either use the jar file and start it with java -jar discocli-17.0.0.jar or
-you can use GraalVM to create a native image and call it via discocli.
+You can either use the jar file and start it with java -jar discocli-17.0.1.jar (which needs JDK 17 to be
+the current jdk) or
+you can use the native image and call it via discocli.
+At the moment there are binaries available for 
+- Windows x64 (Intel)
+- Linux x64 (Intel)
+- Macos x64 (which also works on aarch64, thx to Rosetto2)
+
+The available binaries can be found [here](https://github.com/HanSolo/discocli/releases)
 
 The operating system parameter (-os) can be left out if you would like to get a JDK for
 your current machine because it will be detected automatically.
 
 
 ####Help:
+Get help by using the ```-h or --help``` parameter as follows:
+
+```shell
+Using the jar:
 java -jar discocli-17.0.0.jar -h
 
+Using the binary:
 discocli -h
-
+```
 <br>
 
 ####Info:
-java -jar discocli-17.0.0.jar -i
-
-discocli -i
+If not specified, the distribution will default to Zulu and the 
+archive type will default to ```tar.gz``` for Linux,Mac and to ```zip``` for Windows.
+If you do not specify the operatings system discocli will try to detect
+the current operating system and use it.
+In case you would like to download a version for Alpine Linux, you can
+either specify the ```-os``` paratmer to ```-os alpine-linux``` or use
+the lib c type parameter in combination with linux as os e.g. ```-os linux -lc musl```.
 <br>
 
-####Example usage of jar file (needs JDK 17):
-java -jar discocli-17.0.0.jar -d zulu -v 17.0.2 -fx -os macos
+####Example usaging the jar file (needs JDK 17):
+Get Zulu with version 17.0.2 for windows including JavaFX:
+```shell
+java -jar discocli-17.0.1.jar -d zulu -v 17.0.2 -fx -os windows
+```
+Get the latest version of JDK 17 for Temurin on Linux:
+```shell
+java -jar discocli-17.0.1.jar -d temurin -v 17 -os linux -latest
+```
 
+
+####Example using the binary:
+
+Get Zulu with version 17.0.2 for the current operating system including JavaFX:
+```shell
 discocli -d zulu -v 17.0.2 -fx
+```
+Get the latest version of JDK 16 for Liberica on Windows:
+```shell
+discocli -d liberica -v 16 -os windows -latest
+```
+
 <br>
 
 ####Build native image with GraalVM:
+
+- Make sure you have GraalVM installed (including the native image feature)
+- Set GRAALVM_HOME environment variable
+- Find more info related to operating system specific requirements [here](https://www.graalvm.org/22.0/reference-manual/native-image/)
+
+
 ```shell
+Build the jar file using:
 ./gradlew clean build
 ```
 ```shell
+Go to the build/libs folder:
 cd /build/libs
 ```
 ```shell
-/PATH/TO/GRALLVM_FOLDER/bin/native-image -cp classes:discocli-17.0.0.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --enable-http --enable-https
+Windows:
+%GRAALVM_HOME%\bin\native-image -cp classes;discocli-17.0.1.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
+
+Linux:
+$GRAALVM_HOME/bin/native-image -cp classes:discocli-17.0.1.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
+
+Macos:
+$GRAALVM_HOME/bin/native-image -cp classes:discocli-17.0.1.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --enable-http --enable-https
 ```
 
 ####Usage
 ```
-discocli [-d=<d>] [-v=<v>] [-os=<os>] [-lc=<lc>] [-arc=<arc>] [-at=<at>] [-pt=<pt>] [-ea] [-fx] [-i]
+discocli [-h] [-d=<d>] [-v=<v>] [-os=<os>] [-lc=<lc>] [-arc=<arc>] [-at=<at>] [-pt=<pt>] [-ea] [-fx] [-f] [-latest] [-i]
 
-Download a JDK pkg defined by the given parameters
--d,   --distribution=<d> Distribution (e.g. zulu, temurin, etc.)
+Download a JDK pkg defined by the given parameters:
 
--v,   --version=<v> Version (e.g. 17.0.2)
+-h,   --help                  Show help
+
+-d,   --distribution=<d>      Distribution (e.g. zulu, temurin, etc.)
+
+-v,   --version=<v>           Version number (e.g. 17.0.2)
 
 -os,  --operating-system=<os> Operating system (e.g. windows, linux, macos)
 
--lc,  --libc-type=<lc> Lib C type (libc, glibc, c_std_lib, musl)
+-lc,  --libc-type=<lc>        Lib C type (libc, glibc, c_std_lib, musl)
 
--arc, --architecture=<arc> Architecture (e.g. x64, aarch64)
+-arc, --architecture=<arc>   Architecture (e.g. x64, aarch64)
 
--at,  --archive-type=<at> Archive tpye (e.g. tar.gz, zip)
+-at,  --archive-type=<at>    Archive tpye (e.g. tar.gz, zip)
 
--pt,  --package-type=<pt> Package type (e.g. jdk, jre)
+-pt,  --package-type=<pt>    Package type (e.g. jdk, jre)
 
--ea,  --early-access Include early access builds
+-ea,  --early-access         Include early access builds
 
--fx,  --javafx Bundled with JavaFX
+-fx,  --javafx               Bundled with JavaFX
 
--i,   --info Info about parameters
+-f,   --find                 Find available JDK pkgs for given parameters
+
+-latest                      Latest available for given version number
+
+-i,   --info                 Info about parameters
 ```
 
 ####Parameters
