@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+TARGET_DIR="/usr/local/bin"
+
+if [ ! -d $TARGET_DIR ]
+then
+    mkdir -p $TARGET_DIR
+fi
+
+ln -Ffs "$2/DiscoCLI.app/Contents/MacOS/DiscoCLI" "$TARGET_DIR/discocli"
+
+exit 0
