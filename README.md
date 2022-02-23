@@ -13,7 +13,7 @@ At the moment there are binaries available for
 The available binaries can be found [here](https://github.com/HanSolo/discocli/releases)
 
 <b>Attention:</b> On Windows it might be needed to download and install the [Microsoft Visual C++ 2015 Redistributable Update 3 RC](https://www.microsoft.com/en-us/download/details.aspx?id=52685) to
-get the VCRUNTIME.dll for Java based native images.
+get the VCRUNTIME140.dll for Java based native images.
 
 The operating system parameter (-os) can be left out if you would like to get a JDK for
 your current machine because it will be detected automatically.
