@@ -6,7 +6,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        version: [latest, dev, '22.0.0.2']
+        version: ['22.0.0.2']
         os: [macos-latest, windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
@@ -16,10 +16,7 @@ jobs:
           version: ${{ matrix.version }}
           java-version: '17'
           components: 'native-image'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build with Gradle
-        run: .\gradlew.bat assemble
+          #github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build on Linux
         run: |
