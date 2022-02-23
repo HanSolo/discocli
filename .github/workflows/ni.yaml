@@ -1,9 +1,9 @@
 name: GraalVM Native Image build
 on: [push, pull_request]
 jobs:
-  build-windows:
+  build-macos:
 
-    runs-on: [ windows-latest ]
+    runs-on: [ macos-latest ]
 
     steps:
       - uses: actions/checkout@v2
@@ -13,7 +13,7 @@ jobs:
           java-version: 17.0.2
           architecture: x64
       - name: Build with Gradle
-        run: .\gradlew.bat assemble
+        run: ./gradlew assemble
 
       - uses: graalvm/setup-graalvm@v1
         with:
@@ -21,8 +21,8 @@ jobs:
           java-version: '17'
           components: 'native-image'
 
-      - name: Build native-image on Windows
-        run: native-image.cmd -cp classes;.\build\libs\discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
+      - name: Build native-image on Macos
+        run: native-image -cp classes:./build/libs/discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --enable-http --enable-https
 
       - name: Upload binary
         uses: actions/upload-artifact@v2
