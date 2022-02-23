@@ -27,5 +27,65 @@ jobs:
       - name: Upload binary
         uses: actions/upload-artifact@v2
         with:
-          name: discocli
+          name: discocli-mac-x64
+          path: discocli*
+
+
+  build-linux:
+
+    runs-on: [ ubuntu-latest ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17.0.2
+        uses: foojayio/setup-java@disco
+        with:
+          java-version: 17.0.2
+          architecture: x64
+      - name: Build with Gradle
+        run: ./gradlew assemble
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          version: '22.0.0.2'
+          java-version: '17'
+          components: 'native-image'
+
+      - name: Build native-image on Linux
+        run: native-image -cp classes:./build/libs/discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: discocli-linux-x64
+          path: discocli*
+
+
+  build-windows:
+
+    runs-on: [ windows-latest ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17.0.2
+        uses: foojayio/setup-java@disco
+        with:
+          java-version: 17.0.2
+          architecture: x64
+      - name: Build with Gradle
+        run: .\gradlew.bat assemble
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          version: '22.0.0.2'
+          java-version: '17'
+          components: 'native-image'
+
+      - name: Build native-image on Windows
+        run: native-image -cp classes;.\build\libsdiscocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v2
+        with:
+          name: discocli-windows-x64
           path: discocli*
