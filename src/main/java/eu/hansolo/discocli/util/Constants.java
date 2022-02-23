@@ -24,7 +24,6 @@ import java.util.Map;
 public class Constants {
     private Constants() {}
 
-    public static final Map<String, String> USER_AGENT                = Map.of("User-Agent", "DiscoCLI");
     public static final String              DISCO_API_URL             = "https://api.foojay.io/disco/v3.0/";
     public static final String              DISTRIBUTIONS_ENDPOINT    = "distributions";
     public static final String              MAJOR_VERSIONS_ENDPOINT   = "major_versions";

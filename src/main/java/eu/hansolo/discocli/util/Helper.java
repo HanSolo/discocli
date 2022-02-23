@@ -39,13 +39,10 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 
@@ -53,8 +50,6 @@ public class Helper {
     private Helper() {}
 
     private static HttpClient httpClient;
-    private static HttpClient httpClientAsync;
-
 
     public static Distribution getDistributionFromText(final String text) {
         if (null == text) { return null; }
@@ -302,72 +297,24 @@ public class Helper {
     }
 
     public static final HttpResponse<String> get(final String uri) {
-        return get(uri, new HashMap<>());
-    }
-    public static final HttpResponse<String> get(final String uri, final Map<String,String> headers) {
         if (null == httpClient) { httpClient = createHttpClient(); }
-
-        List<String> requestHeaders = new LinkedList<>();
-        requestHeaders.add("User-Agent");
-        requestHeaders.add("DiscoAPI");
-        headers.entrySet().forEach(entry -> {
-            final String name  = entry.getKey();
-            final String value = entry.getValue();
-            if (null != name && !name.isEmpty() && null != value && !value.isEmpty()) {
-                requestHeaders.add(name);
-                requestHeaders.add(value);
-            }
-        });
-
-        final HttpRequest request = HttpRequest.newBuilder()
-                                               .GET()
-                                               .uri(URI.create(uri))
-                                               .headers(requestHeaders.toArray(new String[0]))
-                                               .timeout(Duration.ofSeconds(10))
-                                               .build();
-
+        HttpRequest request = HttpRequest.newBuilder()
+                                         .GET()
+                                         .uri(URI.create(uri))
+                                         .setHeader("Accept", "application/json")
+                                         .setHeader("User-Agent", "DiscoCLI")
+                                         .timeout(Duration.ofSeconds(10))
+                                         .build();
         try {
             HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 return response;
             } else {
-                // Problem with url request
-                //LOGGER.debug("Error executing get request {}", uri);
-                //LOGGER.debug("Response (Status Code {}) {} ", response.statusCode(), response.body());
                 return response;
             }
         } catch (CompletionException | InterruptedException | IOException e) {
-            //LOGGER.error("Error executing get request {} : {}", uri, e.getMessage());
             return null;
         }
-    }
-
-    public static final CompletableFuture<HttpResponse<String>> getAsync(final String uri) {
-        return getAsync(uri, new HashMap<>());
-    }
-    public static final CompletableFuture<HttpResponse<String>> getAsync(final String uri, final Map<String, String> headers) {
-        if (null == httpClientAsync) { httpClientAsync = createHttpClient(); }
-
-        List<String> requestHeaders = new LinkedList<>();
-        requestHeaders.add("User-Agent");
-        requestHeaders.add("DiscoAPI");
-        headers.entrySet().forEach(entry -> {
-            final String name  = entry.getKey();
-            final String value = entry.getValue();
-            if (null != name && !name.isEmpty() && null != value && !value.isEmpty()) {
-                requestHeaders.add(name);
-                requestHeaders.add(value);
-            }
-        });
-
-        final HttpRequest request = HttpRequest.newBuilder()
-                                               .GET()
-                                               .uri(URI.create(uri))
-                                               .headers(requestHeaders.toArray(new String[0]))
-                                               .timeout(Duration.ofSeconds(10))
-                                               .build();
-
-        return httpClientAsync.sendAsync(request, BodyHandlers.ofString());
     }
 
     public static final HttpResponse<String> httpHeadRequestSync(final String uri) {
@@ -392,14 +339,5 @@ public class Helper {
             //LOGGER.error("Error executing get request {} : {}", uri, e.getMessage());
             return null;
         }
-    }
-    public static final  CompletableFuture<HttpResponse<String>> httpHeadRequestAsync(final String uri) {
-        if (null == httpClientAsync) { httpClientAsync = createHttpClient(); }
-
-        final HttpRequest request = HttpRequest.newBuilder()
-                                               .method("HEAD", HttpRequest.BodyPublishers.noBody())
-                                               .uri(URI.create(uri))
-                                               .build();
-        return httpClientAsync.sendAsync(request, BodyHandlers.ofString());
     }
 }

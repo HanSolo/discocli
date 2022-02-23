@@ -375,7 +375,7 @@ public class DiscoCLI implements Callable<Integer> {
                                                       .append(releaseStatusParam)
                                                       .toString();
 
-            HttpResponse<String> response = Helper.get(request, Constants.USER_AGENT);
+            HttpResponse<String> response = Helper.get(request);
             if (null == response) {
                 System.out.println(Ansi.AUTO.string("@|red \nError retrieving pkg info from Disco API |@ \n"));
                 return 1;
@@ -437,7 +437,7 @@ public class DiscoCLI implements Callable<Integer> {
 
                 // Get direct download link
                 String               urlRequest  = new StringBuilder().append(Constants.DISCO_API_URL).append(Constants.IDS_ENDPOINT).append(pkg.getId()).toString();
-                HttpResponse<String> urlResponse = Helper.get(urlRequest, Constants.USER_AGENT);
+                HttpResponse<String> urlResponse = Helper.get(urlRequest);
                 if (null == urlResponse) {
                     System.out.println(Ansi.AUTO.string("@|red \nError retrieving pkg info from Disco API |@ \n"));
                     return 1;
