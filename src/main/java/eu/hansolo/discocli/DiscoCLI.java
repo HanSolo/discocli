@@ -460,9 +460,9 @@ public class DiscoCLI implements Callable<Integer> {
                             int downloadResponse = downloadPkg(directDownloadUri, (null == parsedPath ? pkg.getFileName() : parsedPath + pkg.getFileName()), pkg.getSize());
                             if (0 == downloadResponse) {
                                 if (null == parsedPath) {
-                                    System.out.println("\nSuccessfully dowloaded JDK pkg to current folder\n");
+                                    System.out.println("\nSuccessfully downloaded JDK pkg to current folder\n");
                                 } else {
-                                    System.out.println("\nSuccessfully dowloaded JDK pkg to " + (parsedPath + pkg.getFileName()) + "\n");
+                                    System.out.println("\nSuccessfully downloaded JDK pkg to " + (parsedPath + pkg.getFileName()) + "\n");
                                 }
                                 return 0;
                             } else if (2 == downloadResponse) {
