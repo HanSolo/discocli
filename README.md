@@ -2,7 +2,7 @@
 
 Disco CLI is a command line interface for the [foojay.io](https://foojay.io) [Disco API](https://github.com/foojayio/discoapi)
 
-You can either use the jar file and start it with java -jar discocli-17.0.1.jar (which needs JDK 17 to be
+You can either use the jar file and start it with java -jar discocli-17.0.2.jar (which needs JDK 17 to be
 the current jdk) or
 you can use the native image and call it via discocli.
 At the moment there are binaries available for 
@@ -21,7 +21,7 @@ Get help by using the ```-h or --help``` parameter as follows:
 
 ```shell
 Using the jar:
-java -jar discocli-17.0.1.jar -h
+java -jar discocli-17.0.2.jar -h
 
 Using the binary:
 discocli -h
@@ -41,11 +41,11 @@ the lib c type parameter in combination with linux as os e.g. ```-os linux -lc m
 ####Example usaging the jar file (needs JDK 17):
 Get Zulu with version 17.0.2 for windows including JavaFX:
 ```shell
-java -jar discocli-17.0.1.jar -d zulu -v 17.0.2 -fx -os windows
+java -jar discocli-17.0.2.jar -d zulu -v 17.0.2 -fx -os windows
 ```
 Get the latest version of JDK 17 for Temurin on Linux:
 ```shell
-java -jar discocli-17.0.1.jar -d temurin -v 17 -os linux -latest
+java -jar discocli-17.0.2.jar -d temurin -v 17 -os linux -latest
 ```
 
 
@@ -79,18 +79,18 @@ cd /build/libs
 ```
 ```shell
 Windows:
-%GRAALVM_HOME%\bin\native-image -cp classes;discocli-17.0.1.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
+%GRAALVM_HOME%\bin\native-image -cp classes;discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
 
 Linux:
-$GRAALVM_HOME/bin/native-image -cp classes:discocli-17.0.1.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
+$GRAALVM_HOME/bin/native-image -cp classes:discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
 
 Macos:
-$GRAALVM_HOME/bin/native-image -cp classes:discocli-17.0.1.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --enable-http --enable-https
+$GRAALVM_HOME/bin/native-image -cp classes:discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --enable-http --enable-https
 ```
 
 ####Usage
 ```
-discocli [-h] [-d=<d>] [-v=<v>] [-os=<os>] [-lc=<lc>] [-arc=<arc>] [-at=<at>] [-pt=<pt>] [-ea] [-fx] [-f] [-latest] [-i]
+discocli [-h] [-d=<d>] [-v=<v>] [-os=<os>] [-lc=<lc>] [-arc=<arc>] [-at=<at>] [-pt=<pt>] [-p=<p>] [-ea] [-fx] [-f] [-latest] [-i]
 
 Download a JDK pkg defined by the given parameters:
 
@@ -109,6 +109,8 @@ Download a JDK pkg defined by the given parameters:
 -at,  --archive-type=<at>     Archive tpye (e.g. tar.gz, zip)
 
 -pt,  --package-type=<pt>     Package type (e.g. jdk, jre)
+
+-p,   --path=<p>              The path where the JDK pkg should be saved to (e.g. /Users/hansolo)
 
 -ea,  --early-access          Include early access builds
 
