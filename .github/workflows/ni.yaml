@@ -1,43 +1,32 @@
 name: GraalVM Native Image build
 on: [push, pull_request]
 jobs:
-  build:
-    name: ${{ matrix.version }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        version: ['22.0.0.2']
-        os: [macos-latest, windows-latest, ubuntu-latest]
+  build-windows:
+
+    runs-on: [ windows-latest ]
+
     steps:
       - uses: actions/checkout@v2
+      - name: Set up JDK 17.0.2
+        uses: foojayio/setup-java@disco
+        with:
+          java-version: 17.0.2
+          architecture: x64
+      - name: Build with Gradle
+        run: .\gradlew.bat assemble
 
       - uses: graalvm/setup-graalvm@v1
         with:
           version: ${{ matrix.version }}
           java-version: '17'
           components: 'native-image'
-          #github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build on Linux
-        run: |
-          ./gradlew clean build
-          native-image -cp classes:discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
-        if: runner.os == 'Linux'
-
-      - name: Build on Windows
-        run: |
-          .\gradlew.bat clean build
-          native-image.cmd -cp classes;discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
-        if: runner.os == 'Windows'
-
-      - name: Build on Macos
-        run: |
-          .\gradlew clean build
-          native-image.cmd -cp classes:discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --enable-http --enable-https
-        if: runner.os == 'Macos'
+      - name: Build native-image on Windows
+        run: native-image.cmd -cp classes;discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
 
       - name: Upload binary
         uses: actions/upload-artifact@v2
         with:
-          name: discocli-${{ matrix.os }}-${{ matrix.version }}
+          name: discocli
           path: discocli*
+          
