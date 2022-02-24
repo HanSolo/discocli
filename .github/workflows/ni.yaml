@@ -82,7 +82,7 @@ jobs:
           components: 'native-image'
 
       - name: Build native-image on Windows
-        run: native-image.cmd -jar ".\build\libs\discocli-17.0.3.jar" --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
+        run: native-image.cmd -jar ".\build\libs\discocli-17.0.3.jar" --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
 
       - name: Upload binary
         uses: actions/upload-artifact@v2
