@@ -106,13 +106,13 @@ cd /build/libs
 ```
 ```shell
 Windows:
-%GRAALVM_HOME%\bin\native-image.cmd -cp classes;discocli-17.0.3.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
+%GRAALVM_HOME%\bin\native-image.cmd -jar discocli-17.0.3.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
 
 Linux:
-$GRAALVM_HOME/bin/native-image -cp classes:discocli-17.0.3.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
+$GRAALVM_HOME/bin/native-image -jar discocli-17.0.3.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
 
 Macos:
-$GRAALVM_HOME/bin/native-image -cp classes:discocli-17.0.3.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --enable-http --enable-https
+$GRAALVM_HOME/bin/native-image -jar ./discocli-17.0.3.jar --no-server -H:Name=discocli --no-fallback --enable-http --enable-https
 ```
 
 ####Usage
