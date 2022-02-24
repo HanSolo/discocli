@@ -47,7 +47,7 @@ archive type will default to ```tar.gz``` for Linux, Mac and to ```zip``` for Wi
 If you do not specify the operatings system discocli will try to detect
 the current operating system and use it.
 In case you would like to download a version for Alpine Linux, you can
-either specify the ```-os``` paratmer to ```-os alpine-linux``` or use
+either specify the ```-os``` parameter to ```-os alpine-linux``` or use
 the lib c type parameter in combination with linux as os e.g. ```-os linux -lc musl```.
 <br>
 
