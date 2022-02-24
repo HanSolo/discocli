@@ -8,9 +8,14 @@ you can use the native image and call it via discocli.
 At the moment there are binaries available for 
 - Windows x64 (Intel)
 - Linux x64 (Intel)
-- Macos x64 (which also works on aarch64, thx to Rosetto2)
+- Macos x64 (which also works on aarch64, thx to Rosetta2)
 
 The available binaries can be found [here](https://github.com/HanSolo/discocli/releases)
+
+From version 17.0.3 on now the native images will always be build on each push using [github actions](https://github.com/HanSolo/discocli/actions) and can be downloaded from the action itself.
+Keep in mind that you might have to allow the downloaded binary to be executed on your local machine.
+On Macos you need to open the binary by CTRL+RIGHT click and Open it once in the Finder and then it will work from the command line.
+On Windows you have to double click the exe file and agree to execute it once, after that you can execute it also from the command line.
 
 <b>Attention:</b> On Windows it might be needed to download and install the [Microsoft Visual C++ 2015 Redistributable Update 3 RC](https://www.microsoft.com/en-us/download/details.aspx?id=52685) to
 get the VCRUNTIME140.dll for Java based native images.
@@ -42,6 +47,7 @@ the lib c type parameter in combination with linux as os e.g. ```-os linux -lc m
 <br>
 
 ####Example usaging the jar file (needs JDK 17):
+
 Get Zulu with version 17.0.2 for windows including JavaFX:
 ```shell
 java -jar discocli-17.0.3.jar -d zulu -v 17.0.2 -fx -os windows
@@ -53,7 +59,6 @@ java -jar discocli-17.0.3.jar -d temurin -v 17 -os linux -latest
 
 
 ####Example using the binary:
-
 
 Get Zulu with version 17.0.2 for the current operating system including JavaFX:
 ```shell
