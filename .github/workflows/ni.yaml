@@ -1,4 +1,4 @@
-name: GraalVM Native Image build
+name: BuildNativeImage
 on: [push, pull_request]
 jobs:
   build-macos:
