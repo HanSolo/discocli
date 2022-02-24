@@ -6,7 +6,6 @@ module eu.hansolo.discocli {
 
     // 3rd party
     requires eu.hansolo.jdktools;
-    requires eu.hansolo.toolbox;
     requires com.google.gson;
     requires info.picocli;
 

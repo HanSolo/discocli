@@ -35,7 +35,7 @@ import eu.hansolo.jdktools.OperatingSystem;
 import eu.hansolo.jdktools.PackageType;
 import eu.hansolo.jdktools.util.OutputFormat;
 import eu.hansolo.jdktools.versioning.VersionNumber;
-import eu.hansolo.toolbox.tuples.Triplet;
+import eu.hansolo.jdktools.util.Helper.OsArcMode;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Ansi;
@@ -68,7 +68,7 @@ import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
 @Command(
     name        = "discocli",
     description = "Download a JDK pkg defined by the given parameters",
-    version     = "17.0.2"
+    version     = "17.0.3"
 )
 public class DiscoCLI implements Callable<Integer> {
 
@@ -209,7 +209,7 @@ public class DiscoCLI implements Callable<Integer> {
                 return 0;
             }
 
-            final Triplet<OperatingSystem, Architecture, OperatingMode> sysInfo = eu.hansolo.toolbox.Helper.getOperaringSystemArchitectureOperatingMode();
+            final OsArcMode sysInfo = eu.hansolo.jdktools.util.Helper.getOperaringSystemArchitectureOperatingMode();
 
             // Parse distro
             final Distro parsedDistro = null == d ? Distro.ZULU : Distro.fromText(d);
@@ -225,12 +225,12 @@ public class DiscoCLI implements Callable<Integer> {
             }
 
             // Parse operating system
-            final OperatingSystem parsedOperatingSystem = null == os ? sysInfo.getA() : OperatingSystem.fromText(os);
+            final OperatingSystem parsedOperatingSystem = null == os ? sysInfo.operatingSystem() : OperatingSystem.fromText(os);
             final OperatingSystem operatingSystem;
             if (find && null == os) {
                 operatingSystem = OperatingSystem.NONE;
             } else if (OperatingSystem.NONE == parsedOperatingSystem || OperatingSystem.NOT_FOUND == parsedOperatingSystem) {
-                operatingSystem = eu.hansolo.toolbox.Helper.getOperatingSystem();
+                operatingSystem = sysInfo.operatingSystem();
             } else {
                 operatingSystem = parsedOperatingSystem;
             }
@@ -255,8 +255,8 @@ public class DiscoCLI implements Callable<Integer> {
             }
 
             // Parse architecture
-            final boolean      rosetta2           = OperatingSystem.MACOS == sysInfo.getA() && OperatingMode.EMULATED == sysInfo.getC();
-            final Architecture parsedArchitecture = null == arc ? rosetta2 ? Architecture.AARCH64 : sysInfo.getB() : Architecture.fromText(arc);
+            final boolean      rosetta2           = OperatingSystem.MACOS == sysInfo.operatingSystem() && OperatingMode.EMULATED == sysInfo.operatingMode();
+            final Architecture parsedArchitecture = null == arc ? rosetta2 ? Architecture.AARCH64 : sysInfo.architecture() : Architecture.fromText(arc);
             final Architecture architecture;
             if (find && null == arc) {
                 architecture = Architecture.NONE;

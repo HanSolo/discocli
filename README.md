@@ -2,7 +2,7 @@
 
 Disco CLI is a command line interface for the [foojay.io](https://foojay.io) [Disco API](https://github.com/foojayio/discoapi)
 
-You can either use the jar file and start it with java -jar discocli-17.0.2.jar (which needs JDK 17 to be
+You can either use the jar file and start it with java -jar discocli-17.0.3.jar (which needs JDK 17 to be
 the current jdk) or
 you can use the native image and call it via discocli.
 At the moment there are binaries available for 
@@ -24,7 +24,7 @@ Get help by using the ```-h or --help``` parameter as follows:
 
 ```shell
 Using the jar:
-java -jar discocli-17.0.2.jar -h
+java -jar discocli-17.0.3.jar -h
 
 Using the binary:
 discocli -h
@@ -44,23 +44,42 @@ the lib c type parameter in combination with linux as os e.g. ```-os linux -lc m
 ####Example usaging the jar file (needs JDK 17):
 Get Zulu with version 17.0.2 for windows including JavaFX:
 ```shell
-java -jar discocli-17.0.2.jar -d zulu -v 17.0.2 -fx -os windows
+java -jar discocli-17.0.3.jar -d zulu -v 17.0.2 -fx -os windows
 ```
 Get the latest version of JDK 17 for Temurin on Linux:
 ```shell
-java -jar discocli-17.0.2.jar -d temurin -v 17 -os linux -latest
+java -jar discocli-17.0.3.jar -d temurin -v 17 -os linux -latest
 ```
 
 
 ####Example using the binary:
 
+
 Get Zulu with version 17.0.2 for the current operating system including JavaFX:
 ```shell
 discocli -d zulu -v 17.0.2 -fx
 ```
+
 Get the latest version of JDK 16 for Liberica on Windows:
 ```shell
 discocli -d liberica -v 16 -os windows -latest
+```
+
+Get the JDK 17.0.2 of temurin for macos with aarch64 as a tar.gz and store it to a folder
+```shell
+discocli -d temurin -v 17.0.2 -os macos -arc aarch64 -at tar.gz -p /Users/hansolo
+```
+
+In case a JDK pkg cannot be found discocli will try to give you the available pkgs.
+```shell
+discocli -d liberica -v 12 -os linux -arc x64 -fx -latest
+
+Sorry, defined pkg not found in Disco API
+
+Packages available for Liberica for version 12:
+discocli -d liberica -v 12.0.2 -os linux -lc glibc -arc amd64 -at tar.gz -pt jdk
+discocli -d liberica -v 12.0.1 -os linux -lc glibc -arc amd64 -at tar.gz -pt jdk
+discocli -d liberica -v 12 -os linux -lc glibc -arc amd64 -at tar.gz -pt jdk
 ```
 
 <br>
@@ -82,13 +101,13 @@ cd /build/libs
 ```
 ```shell
 Windows:
-%GRAALVM_HOME%\bin\native-image.cmd -cp classes;discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
+%GRAALVM_HOME%\bin\native-image.cmd -cp classes;discocli-17.0.3.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
 
 Linux:
-$GRAALVM_HOME/bin/native-image -cp classes:discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
+$GRAALVM_HOME/bin/native-image -cp classes:discocli-17.0.3.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --static --enable-http --enable-https
 
 Macos:
-$GRAALVM_HOME/bin/native-image -cp classes:discocli-17.0.2.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --enable-http --enable-https
+$GRAALVM_HOME/bin/native-image -cp classes:discocli-17.0.3.jar --no-server -H:Name=discocli eu.hansolo.discocli.DiscoCLI --no-fallback --enable-http --enable-https
 ```
 
 ####Usage
