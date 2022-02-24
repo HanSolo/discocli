@@ -1,5 +1,10 @@
 ## Disco CLI
 
+<img src="https://raw.githubusercontent.com/HanSolo/discocli/main/resources/banner.png" alt="DiscoCLI" style="width:200px;"/>
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/HanSolo/discocli/BuildNativeImage)
+![GitHub all releases](https://img.shields.io/github/downloads/HanSolo/discocli/total)
+
 Disco CLI is a command line interface for the [foojay.io](https://foojay.io) [Disco API](https://github.com/foojayio/discoapi)
 
 You can either use the jar file and start it with java -jar discocli-17.0.3.jar (which needs JDK 17 to be
@@ -24,7 +29,7 @@ The operating system parameter (-os) can be left out if you would like to get a 
 your current machine because it will be detected automatically.
 
 
-####Help:
+#### Help:
 Get help by using the ```-h or --help``` parameter as follows:
 
 ```shell
@@ -36,7 +41,7 @@ discocli -h
 ```
 <br>
 
-####Info:
+#### Info:
 If not specified, the distribution will default to Zulu and the 
 archive type will default to ```tar.gz``` for Linux, Mac and to ```zip``` for Windows.
 If you do not specify the operatings system discocli will try to detect
@@ -46,7 +51,7 @@ either specify the ```-os``` paratmer to ```-os alpine-linux``` or use
 the lib c type parameter in combination with linux as os e.g. ```-os linux -lc musl```.
 <br>
 
-####Example usaging the jar file (needs JDK 17):
+#### Example usaging the jar file (needs JDK 17):
 
 Get Zulu with version 17.0.2 for windows including JavaFX:
 ```shell
@@ -58,7 +63,7 @@ java -jar discocli-17.0.3.jar -d temurin -v 17 -os linux -latest
 ```
 
 
-####Example using the binary:
+#### Example using the binary:
 
 Get Zulu with version 17.0.2 for the current operating system including JavaFX:
 ```shell
@@ -89,7 +94,7 @@ discocli -d liberica -v 12 -os linux -lc glibc -arc amd64 -at tar.gz -pt jdk
 
 <br>
 
-####Build native image with GraalVM:
+#### Build native image with GraalVM:
 
 - Make sure you have GraalVM installed (including the native image feature)
 - Set GRAALVM_HOME environment variable
@@ -115,7 +120,7 @@ Macos:
 $GRAALVM_HOME/bin/native-image -jar ./discocli-17.0.3.jar --no-server -H:Name=discocli --no-fallback --enable-http --enable-https
 ```
 
-####Usage
+#### Usage
 ```
 discocli [-h] [-d=<d>] [-v=<v>] [-os=<os>] [-lc=<lc>] [-arc=<arc>] [-at=<at>] [-pt=<pt>] [-p=<p>] [-ea] [-fx] [-f] [-latest] [-i]
 
@@ -150,7 +155,7 @@ Download a JDK pkg defined by the given parameters:
 -i,   --info                  Info about parameters
 ```
 
-####Parameters
+#### Parameters
 ```
 ---------- Distributions ----------
 aoj              (AdoptOpenJDK)
