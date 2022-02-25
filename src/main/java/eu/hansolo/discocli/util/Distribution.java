@@ -38,6 +38,8 @@ public record Distribution(String name, String uiString, String apiString, boole
     public  static final String       FIELD_MAINTAINED = "maintained";
     public  static final String       FIELD_SYNONYMS   = "synonyms";
 
+
+    // ******************** Methods *******************************************
     public Distribution getFromText(final String text) {
         return synonyms.contains(text) ? Distribution.this : null;
     }

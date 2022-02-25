@@ -47,8 +47,11 @@ import java.util.concurrent.CompletionException;
 
 
 public class Helper {
+    // ******************** Constructors **************************************
     private Helper() {}
 
+
+    // ******************** Methods *******************************************
     private static HttpClient httpClient;
 
     public static Distribution getDistributionFromText(final String text) {

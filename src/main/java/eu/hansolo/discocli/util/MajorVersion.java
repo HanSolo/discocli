@@ -20,6 +20,7 @@ package eu.hansolo.discocli.util;
 
 public record MajorVersion(int majorVersion) {
 
+    // ******************** Methods *******************************************
     public int getAsInt() { return majorVersion; }
 
     @Override public String toString() {

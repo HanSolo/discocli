@@ -46,58 +46,58 @@ import static eu.hansolo.jdktools.Constants.QUOTES;
 
 
 public class Pkg {
-    public   static final String          FIELD_ID                     = "id";
-    public   static final String          FIELD_ARCHIVE_TYPE           = "archive_type";
-    public   static final String          FIELD_DISTRIBUTION           = "distribution";
-    public   static final String          FIELD_MAJOR_VERSION          = "major_version";
-    public   static final String          FIELD_JAVA_VERSION           = "java_version";
-    public   static final String          FIELD_DISTRIBUTION_VERSION   = "distribution_version";
-    public   static final String          FIELD_LATEST_BUILD_AVAILABLE = "latest_build_available";
-    public   static final String          FIELD_RELEASE_STATUS         = "release_status";
-    public   static final String          FIELD_TERM_OF_SUPPORT        = "term_of_support";
-    public   static final String          FIELD_OPERATING_SYSTEM       = "operating_system";
-    public   static final String          FIELD_LIB_C_TYPE             = "lib_c_type";
-    public   static final String          FIELD_ARCHITECTURE           = "architecture";
-    public   static final String          FIELD_BITNESS                = "bitness";
-    public   static final String          FIELD_FPU                    = "fpu";
-    public   static final String          FIELD_PACKAGE_TYPE           = "package_type";
-    public   static final String          FIELD_JAVAFX_BUNDLED         = "javafx_bundled";
-    public   static final String          FIELD_DIRECTLY_DOWNLOADABLE  = "directly_downloadable";
-    public   static final String          FIELD_FILENAME               = "filename";
-    public   static final String          FIELD_EPHEMERAL_ID           = "ephemeral_id";
-    public   static final String          FIELD_FREE_USE_IN_PROD       = "free_use_in_production";
-    public   static final String          FIELD_TCK_TESTED             = "tck_tested";
-    public   static final String          FIELD_TCK_CERT_URI           = "tck_cert_uri";
-    public   static final String          FIELD_AQAVIT_CERTIFIED       = "aqavit_certified";
-    public   static final String          FIELD_AQAVIT_CERT_URI        = "aqavit_cert_uri";
-    public   static final String          FIELD_SIZE                   = "size";
+    public static final String          FIELD_ID                     = "id";
+    public static final String          FIELD_ARCHIVE_TYPE           = "archive_type";
+    public static final String          FIELD_DISTRIBUTION           = "distribution";
+    public static final String          FIELD_MAJOR_VERSION          = "major_version";
+    public static final String          FIELD_JAVA_VERSION           = "java_version";
+    public static final String          FIELD_DISTRIBUTION_VERSION   = "distribution_version";
+    public static final String          FIELD_LATEST_BUILD_AVAILABLE = "latest_build_available";
+    public static final String          FIELD_RELEASE_STATUS         = "release_status";
+    public static final String          FIELD_TERM_OF_SUPPORT        = "term_of_support";
+    public static final String          FIELD_OPERATING_SYSTEM       = "operating_system";
+    public static final String          FIELD_LIB_C_TYPE             = "lib_c_type";
+    public static final String          FIELD_ARCHITECTURE           = "architecture";
+    public static final String          FIELD_BITNESS                = "bitness";
+    public static final String          FIELD_FPU                    = "fpu";
+    public static final String          FIELD_PACKAGE_TYPE           = "package_type";
+    public static final String          FIELD_JAVAFX_BUNDLED         = "javafx_bundled";
+    public static final String          FIELD_DIRECTLY_DOWNLOADABLE  = "directly_downloadable";
+    public static final String          FIELD_FILENAME               = "filename";
+    public static final String          FIELD_EPHEMERAL_ID           = "ephemeral_id";
+    public static final String          FIELD_FREE_USE_IN_PROD       = "free_use_in_production";
+    public static final String          FIELD_TCK_TESTED             = "tck_tested";
+    public static final String          FIELD_TCK_CERT_URI           = "tck_cert_uri";
+    public static final String          FIELD_AQAVIT_CERTIFIED       = "aqavit_certified";
+    public static final String          FIELD_AQAVIT_CERT_URI        = "aqavit_cert_uri";
+    public static final String          FIELD_SIZE                   = "size";
+    private             String          id;
+    private             String          ephemeralId;
+    private             Distribution    distribution;
+    private             MajorVersion    majorVersion;
+    private             Semver          javaVersion;
+    private             VersionNumber   distributionVersion;
+    private             Architecture    architecture;
+    private             FPU             fpu;
+    private             OperatingSystem operatingSystem;
+    private             LibCType        libcType;
+    private             PackageType     packageType;
+    private             ReleaseStatus   releaseStatus;
+    private             ArchiveType     archiveType;
+    private             TermOfSupport   termOfSupport;
+    private             Boolean         javafxBundled;
+    private             Boolean         latestBuildAvailable;
+    private             Boolean         directlyDownloadable;
+    private             String          filename;
+    private             Boolean         freeUseInProduction;
+    private             Verification    tckTested;
+    private             String          tckCertUri;
+    private             Verification    aqavitCertified;
+    private             String          aqavitCertUri;
+    private             long            size;
 
-    private String          id;
-    private String          ephemeralId;
-    private Distribution    distribution;
-    private MajorVersion    majorVersion;
-    private Semver          javaVersion;
-    private VersionNumber   distributionVersion;
-    private Architecture    architecture;
-    private FPU             fpu;
-    private OperatingSystem operatingSystem;
-    private LibCType        libcType;
-    private PackageType     packageType;
-    private ReleaseStatus   releaseStatus;
-    private ArchiveType     archiveType;
-    private TermOfSupport   termOfSupport;
-    private Boolean         javafxBundled;
-    private Boolean         latestBuildAvailable;
-    private Boolean         directlyDownloadable;
-    private String          fileName;
-    private Boolean         freeUseInProduction;
-    private Verification    tckTested;
-    private String          tckCertUri;
-    private Verification    aqavitCertified;
-    private String          aqavitCertUri;
-    private long            size;
 
-
+    // ******************** Constructors **************************************
     public Pkg(final String packageJson) {
         if (null == packageJson || packageJson.isEmpty()) {
             throw new IllegalArgumentException("Package json string cannot be null or empty.");
@@ -121,7 +121,7 @@ public class Pkg {
         this.termOfSupport        = json.has(FIELD_TERM_OF_SUPPORT)        ? TermOfSupport.fromText(json.get(FIELD_TERM_OF_SUPPORT).getAsString())           : TermOfSupport.NOT_FOUND;
         this.javafxBundled        = json.has(FIELD_JAVAFX_BUNDLED)         ? json.get(FIELD_JAVAFX_BUNDLED).getAsBoolean()                                   : Boolean.FALSE;
         this.directlyDownloadable = json.has(FIELD_DIRECTLY_DOWNLOADABLE)  ? json.get(FIELD_DIRECTLY_DOWNLOADABLE).getAsBoolean()                            : Boolean.FALSE;
-        this.fileName             = json.has(FIELD_FILENAME)               ? json.get(FIELD_FILENAME).getAsString()                                          : "";
+        this.filename             = json.has(FIELD_FILENAME) ? json.get(FIELD_FILENAME).getAsString() : "";
         this.ephemeralId          = json.has(FIELD_EPHEMERAL_ID)           ? json.get(FIELD_EPHEMERAL_ID).getAsString()                                      : "";
         this.freeUseInProduction  = json.has(FIELD_FREE_USE_IN_PROD)       ? json.get(FIELD_FREE_USE_IN_PROD).getAsBoolean()                                 : Boolean.TRUE;
         this.tckTested            = json.has(FIELD_TCK_TESTED)             ? Verification.fromText(json.get(FIELD_TCK_TESTED).getAsString())                 : Verification.UNKNOWN;
@@ -132,6 +132,7 @@ public class Pkg {
     }
 
 
+    // ******************** Methods *******************************************
     public String getId() { return id; }
 
     public Distribution getDistribution() { return distribution; }
@@ -176,7 +177,7 @@ public class Pkg {
 
     public Boolean isDirectlyDownloadable() { return directlyDownloadable; }
 
-    public String getFileName() { return fileName; }
+    public String getFilename() { return filename; }
 
     public String getEphemeralId() { return ephemeralId; }
 
@@ -193,12 +194,20 @@ public class Pkg {
     public long getSize() { return size; }
 
     @Override public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) { return true; }
+        if (o == null || getClass() != o.getClass()) { return false; }
         Pkg pkg = (Pkg) o;
-        return javafxBundled == pkg.javafxBundled && distribution.equals(pkg.distribution) && javaVersion.equalTo(pkg.javaVersion) && architecture == pkg.architecture &&
-               operatingSystem == pkg.operatingSystem && packageType == pkg.packageType && releaseStatus == pkg.releaseStatus &&
-               archiveType == pkg.archiveType && termOfSupport == pkg.termOfSupport && ephemeralId.equals(pkg.ephemeralId) && latestBuildAvailable == pkg.latestBuildAvailable;
+        return javafxBundled        == pkg.javafxBundled &&
+               architecture         == pkg.architecture &&
+               operatingSystem      == pkg.operatingSystem &&
+               packageType          == pkg.packageType &&
+               releaseStatus        == pkg.releaseStatus &&
+               archiveType          == pkg.archiveType &&
+               termOfSupport        == pkg.termOfSupport &&
+               latestBuildAvailable == pkg.latestBuildAvailable &&
+               ephemeralId.equals(pkg.ephemeralId) &&
+               distribution.equals(pkg.distribution) &&
+               javaVersion.equalTo(pkg.javaVersion);
     }
 
     @Override public int hashCode() {
@@ -206,7 +215,6 @@ public class Pkg {
     }
 
     public String toCliString() {
-        //discocli -d zulu -v 17.0.2 -os macos -lc libc -arc aarch64 -at tar.gz -pt jdk
         return new StringBuilder().append(Ansi.AUTO.string("@|cyan discocli|@"))
                                   .append(Ansi.AUTO.string("@|yellow  -d |@")).append(distribution.apiString())
                                   .append(Ansi.AUTO.string("@|yellow  -v |@")).append(javaVersion.getVersionNumber().toString(OutputFormat.REDUCED_COMPRESSED, true, ReleaseStatus.EA == releaseStatus))
@@ -236,7 +244,7 @@ public class Pkg {
                                   .append(QUOTES).append(FIELD_ARCHIVE_TYPE).append(QUOTES).append(COLON).append(QUOTES).append(archiveType.getUiString()).append(QUOTES).append(COMMA)
                                   .append(QUOTES).append(FIELD_TERM_OF_SUPPORT).append(QUOTES).append(COLON).append(QUOTES).append(termOfSupport.name()).append(QUOTES).append(COMMA)
                                   .append(QUOTES).append(FIELD_JAVAFX_BUNDLED).append(QUOTES).append(COLON).append(javafxBundled).append(COMMA)
-                                  .append(QUOTES).append(FIELD_FILENAME).append(QUOTES).append(COLON).append(QUOTES).append(fileName).append(QUOTES).append(COMMA)
+                                  .append(QUOTES).append(FIELD_FILENAME).append(QUOTES).append(COLON).append(QUOTES).append(filename).append(QUOTES).append(COMMA)
                                   .append(QUOTES).append(FIELD_EPHEMERAL_ID).append(QUOTES).append(COLON).append(QUOTES).append(ephemeralId).append(QUOTES).append(COMMA)
                                   .append(QUOTES).append(FIELD_FREE_USE_IN_PROD).append(QUOTES).append(COLON).append(freeUseInProduction).append(COMMA)
                                   .append(QUOTES).append(FIELD_TCK_TESTED).append(QUOTES).append(COLON).append(QUOTES).append(tckTested.getApiString()).append(QUOTES).append(COMMA)

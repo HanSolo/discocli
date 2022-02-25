@@ -60,11 +60,13 @@ public enum Distro implements Api {
     private final Distribution distribution;
 
 
+    // ******************** Constructors **************************************
     Distro(final Distribution distribution) {
         this.distribution = distribution;
     }
 
 
+    // ******************** Methods *******************************************
     @Override public String getUiString() { return get().uiString(); }
 
     @Override public String getApiString() { return get().apiString(); }
@@ -75,11 +77,11 @@ public enum Distro implements Api {
 
     @Override public Distro[] getAll() { return values(); }
 
-    public String getName() { return name().toUpperCase(); }
+    public final String getName() { return name().toUpperCase(); }
 
-    public static Distribution distributionFromText(final String text) { return fromText(text).get(); }
+    public static final Distribution distributionFromText(final String text) { return fromText(text).get(); }
 
-    public static Distro fromText(final String text) {
+    public static final Distro fromText(final String text) {
         if (null == text) { return NOT_FOUND; }
         switch (text) {
             case "zulu":
@@ -275,20 +277,20 @@ public enum Distro implements Api {
         }
     }
 
-    public Distribution get() { return distribution; }
+    public final Distribution get() { return distribution; }
 
-    public boolean isMaintained() { return get().maintained(); }
+    public final boolean isMaintained() { return get().maintained(); }
 
-    public static List<Distribution> getDistributions() {
+    public final static List<Distribution> getDistributions() {
         return Arrays.stream(values())
                      .filter(distro -> Distro.NONE      != distro)
                      .filter(distro -> Distro.NOT_FOUND != distro)
                      .map(Distro::get).collect(Collectors.toList());
     }
 
-    public static List<Distro> getAsList() { return Arrays.asList(values()); }
+    public final static List<Distro> getAsList() { return Arrays.asList(values()); }
 
-    public static List<Distro> getAsListWithoutNoneAndNotFound() {
+    public final static List<Distro> getAsListWithoutNoneAndNotFound() {
         return getAsList().stream()
                           .filter(distro -> Distro.NONE != distro)
                           .filter(distro -> Distro.NOT_FOUND != distro)
@@ -296,7 +298,7 @@ public enum Distro implements Api {
                           .collect(Collectors.toList());
     }
 
-    public static List<Distro> getMaintainedAsListWithoutNoneAndNotFound() {
+    public final static List<Distro> getMaintainedAsListWithoutNoneAndNotFound() {
         return getAsList().stream()
                           .filter(distro -> Distro.NONE != distro)
                           .filter(distro -> Distro.NOT_FOUND != distro)
@@ -305,7 +307,7 @@ public enum Distro implements Api {
                           .collect(Collectors.toList());
     }
 
-    public static List<Distro> getDistrosWithJavaVersioning() {
+    public final static List<Distro> getDistrosWithJavaVersioning() {
         return Arrays.stream(values())
                      .filter(distro -> Distro.NONE            != distro)
                      .filter(distro -> Distro.NOT_FOUND       != distro)
@@ -318,7 +320,7 @@ public enum Distro implements Api {
                      .collect(Collectors.toList());
     }
 
-    public String toString(final OutputFormat outputFormat) {
+    public final String toString(final OutputFormat outputFormat) {
         return toString();
     }
 

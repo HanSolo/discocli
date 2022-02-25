@@ -18,7 +18,6 @@
 
 package eu.hansolo.discocli;
 
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -71,9 +70,6 @@ import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
     version     = "17.0.3"
 )
 public class DiscoCLI implements Callable<Integer> {
-
-    //@Parameters(index = "0", description = "The operating system of the requested JDK")
-    //private OperatingSystem os;
 
     @Option(names = { "-h", "--help" }, description = "Help") boolean help;
 
@@ -460,20 +456,20 @@ public class DiscoCLI implements Callable<Integer> {
                             final String     filename          = packageInfoJson.has(Constants.FIELD_FILENAME) ? packageInfoJson.get(Constants.FIELD_FILENAME).getAsString() : "";
                             final String     directDownloadUri = packageInfoJson.has(Constants.FIELD_DIRECT_DOWNLOAD_URI) ? packageInfoJson.get(Constants.FIELD_DIRECT_DOWNLOAD_URI).getAsString() : "";
                             if (null == filename) { return 1; }
-                            System.out.println("\nDownloading " + pkg.getFileName() + ":");
-                            int downloadResponse = downloadPkg(directDownloadUri, (null == parsedPath ? pkg.getFileName() : parsedPath + pkg.getFileName()), pkg.getSize());
+                            System.out.println("\nDownloading " + pkg.getFilename() + ":");
+                            int downloadResponse = downloadPkg(directDownloadUri, (null == parsedPath ? pkg.getFilename() : parsedPath + pkg.getFilename()), pkg.getSize());
                             if (0 == downloadResponse) {
                                 if (null == parsedPath) {
                                     System.out.println("\nSuccessfully downloaded JDK pkg to current folder\n");
                                 } else {
-                                    System.out.println("\nSuccessfully downloaded JDK pkg to " + (parsedPath + pkg.getFileName()) + "\n");
+                                    System.out.println("\nSuccessfully downloaded JDK pkg to " + (parsedPath + pkg.getFilename()) + "\n");
                                 }
                                 return 0;
                             } else if (2 == downloadResponse) {
                                 System.out.println("\nSelected JDK pkg already exists: " + filename + " \n");
                                 return 0;
                             } else {
-                                System.out.println(Ansi.AUTO.string("@|red \nError downloading " + pkg.getFileName() + " from " + directDownloadUri + " |@ \n"));
+                                System.out.println(Ansi.AUTO.string("@|red \nError downloading " + pkg.getFilename() + " from " + directDownloadUri + " |@ \n"));
                                 return 1;
                             }
                         } else {
