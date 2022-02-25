@@ -248,7 +248,7 @@ public class Helper {
     }
 
     public static List<Pkg> getPkgsForDistributionAndMajorVersion(final Distribution distribution, final int majorVersion, final OperatingSystem operatingSystem, final LibCType libcType, final Architecture architecture, final PackageType packageType, final ArchiveType archiveType, final boolean includeEA) {
-        StringBuilder builder = new StringBuilder().append(Constants.DISCO_API_URL).append(Constants.PACKAGES_ENDPOINT).append("?distro=").append(distribution.getApiString()).append("&version=").append(majorVersion);
+        StringBuilder builder = new StringBuilder().append(Constants.DISCO_API_URL).append(Constants.PACKAGES_ENDPOINT).append("?distro=").append(distribution.apiString()).append("&version=").append(majorVersion);
         if (null != operatingSystem) {
             builder.append("&operating_system=").append(operatingSystem.getApiString());
             if (null != libcType) {

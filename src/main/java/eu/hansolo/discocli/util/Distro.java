@@ -65,9 +65,9 @@ public enum Distro implements Api {
     }
 
 
-    @Override public String getUiString() { return get().getUiString(); }
+    @Override public String getUiString() { return get().uiString(); }
 
-    @Override public String getApiString() { return get().getApiString(); }
+    @Override public String getApiString() { return get().apiString(); }
 
     @Override public Distro getDefault() { return Distro.NONE; }
 
@@ -277,7 +277,7 @@ public enum Distro implements Api {
 
     public Distribution get() { return distribution; }
 
-    public boolean isMaintained() { return get().isMaintained(); }
+    public boolean isMaintained() { return get().maintained(); }
 
     public static List<Distribution> getDistributions() {
         return Arrays.stream(values())

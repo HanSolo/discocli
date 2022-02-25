@@ -3,7 +3,20 @@
 <img src="https://raw.githubusercontent.com/HanSolo/discocli/main/resources/banner.png" alt="DiscoCLI" style="width:200px;"/>
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/HanSolo/discocli/BuildNativeImage)
+
+![MacOS](https://badgen.net/badge/macos-x64/✓/green)
+![Windows](https://badgen.net/badge/windows-x64/✓/green)
+![Linux](https://badgen.net/badge/linux-x64/✓/green)
+![Linux](https://badgen.net/badge/linux-aarch64/✓/green)
+
+![stars](https://badgen.net/github/stars/HanSolo/discocli)
+
 ![GitHub all releases](https://img.shields.io/github/downloads/HanSolo/discocli/total)
+
+![latest tag](https://badgen.net/github/tag/HanSolo/discocli)
+
+![license](https://badgen.net/github/license/HanSolo/discocli)
+
 
 Disco CLI is a command line interface for the [foojay.io](https://foojay.io) [Disco API](https://github.com/foojayio/discoapi)
 

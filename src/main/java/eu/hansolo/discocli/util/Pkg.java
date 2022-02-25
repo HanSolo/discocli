@@ -136,7 +136,7 @@ public class Pkg {
 
     public Distribution getDistribution() { return distribution; }
 
-    public String getDistributionName() { return this.distribution.getName(); }
+    public String getDistributionName() { return this.distribution.name(); }
 
     public MajorVersion getMajorVersion() { return majorVersion; }
 
@@ -208,7 +208,7 @@ public class Pkg {
     public String toCliString() {
         //discocli -d zulu -v 17.0.2 -os macos -lc libc -arc aarch64 -at tar.gz -pt jdk
         return new StringBuilder().append(Ansi.AUTO.string("@|cyan discocli|@"))
-                                  .append(Ansi.AUTO.string("@|yellow  -d |@")).append(distribution.getApiString())
+                                  .append(Ansi.AUTO.string("@|yellow  -d |@")).append(distribution.apiString())
                                   .append(Ansi.AUTO.string("@|yellow  -v |@")).append(javaVersion.getVersionNumber().toString(OutputFormat.REDUCED_COMPRESSED, true, ReleaseStatus.EA == releaseStatus))
                                   .append(Ansi.AUTO.string("@|yellow  -os |@")).append(operatingSystem.getApiString())
                                   .append(Ansi.AUTO.string("@|yellow  -lc |@")).append(libcType.getApiString())
@@ -223,7 +223,7 @@ public class Pkg {
     @Override public String toString() {
         return new StringBuilder().append(CURLY_BRACKET_OPEN)
                                   .append(QUOTES).append(FIELD_ID).append(QUOTES).append(COLON).append(QUOTES).append(getId()).append(QUOTES).append(COMMA)
-                                  .append(QUOTES).append(FIELD_DISTRIBUTION).append(QUOTES).append(COLON).append(QUOTES).append(distribution.getName()).append(QUOTES).append(COMMA)
+                                  .append(QUOTES).append(FIELD_DISTRIBUTION).append(QUOTES).append(COLON).append(QUOTES).append(distribution.name()).append(QUOTES).append(COMMA)
                                   .append(QUOTES).append(FIELD_JAVA_VERSION).append(QUOTES).append(COLON).append(QUOTES).append(javaVersion.toString()).append(QUOTES).append(COMMA)
                                   .append(QUOTES).append(FIELD_DISTRIBUTION_VERSION).append(QUOTES).append(COLON).append(QUOTES).append(distributionVersion).append(QUOTES).append(COMMA)
                                   .append(QUOTES).append(FIELD_LATEST_BUILD_AVAILABLE).append(QUOTES).append(COLON).append(latestBuildAvailable).append(COMMA)

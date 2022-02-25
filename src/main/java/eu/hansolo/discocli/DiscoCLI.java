@@ -187,7 +187,7 @@ public class DiscoCLI implements Callable<Integer> {
                 System.out.println("Keep in mind that not every distribution supports all operating systems, archive types, package types etc.");
                 System.out.println();
                 System.out.println(Ansi.AUTO.string("@|bold,cyan ---------- Distributions ---------- |@"));
-                Distro.getAsListWithoutNoneAndNotFound().stream().sorted(Comparator.comparing(Distro::getUiString)).forEach(distro -> System.out.println(distro.getApiString() + distro.get().getSpacer() + "(" + distro.getUiString() + ")"));
+                Distro.getAsListWithoutNoneAndNotFound().stream().sorted(Comparator.comparing(Distro::getUiString)).forEach(distro -> System.out.println(distro.getApiString() + distro.get().spacer() + "(" + distro.getUiString() + ")"));
                 System.out.println();
                 System.out.println(Ansi.AUTO.string("@|bold,cyan ---------- Operating systems ------ |@"));
                 System.out.println("windows");
@@ -324,6 +324,10 @@ public class DiscoCLI implements Callable<Integer> {
             if (null == v) {
                 versionNumber = null;
             } else {
+                if (v.startsWith("-")) {
+                    System.out.println(Ansi.AUTO.string("@|red \nVersion number cannot be negative |@ \n"));
+                    return 1;
+                }
                 try {
                     versionNumber = VersionNumber.fromText(v);
                 } catch (IllegalArgumentException e) {

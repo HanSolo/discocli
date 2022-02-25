@@ -31,40 +31,12 @@ import static eu.hansolo.jdktools.Constants.SQUARE_BRACKET_CLOSE_QUOTES;
 import static eu.hansolo.jdktools.Constants.SQUARE_BRACKET_OPEN_QUOTES;
 
 
-public class Distribution {
+public record Distribution(String name, String uiString, String apiString, boolean maintained, List<String> synonyms, String spacer) {
     public  static final String       FIELD_NAME       = "name";
     public  static final String       FIELD_UI_STRING  = "ui_string";
     public  static final String       FIELD_API_STRING = "api_string";
     public  static final String       FIELD_MAINTAINED = "maintained";
     public  static final String       FIELD_SYNONYMS   = "synonyms";
-    private        final String       name;
-    private        final String       uiString;
-    private        final String       apiString;
-    private        final boolean      maintained;
-    private        final List<String> synonyms;
-    private        final String       spacer;
-
-
-    public Distribution(final String name, final String uiString, final String apiString, final boolean maintained, final List<String> synonyms, final String spacer) {
-        this.name       = name;
-        this.uiString   = uiString;
-        this.apiString  = apiString;
-        this.maintained = maintained;
-        this.synonyms   = synonyms;
-        this.spacer     = spacer;
-    }
-
-    public String getName() { return name; }
-
-    public String getUiString() { return uiString; }
-
-    public String getApiString() { return apiString; }
-
-    public boolean isMaintained() { return maintained; }
-
-    public List<String> getSynonyms() { return synonyms; }
-
-    public String getSpacer() { return spacer; }
 
     public Distribution getFromText(final String text) {
         return synonyms.contains(text) ? Distribution.this : null;
@@ -76,7 +48,8 @@ public class Distribution {
                                   .append(QUOTES).append(FIELD_UI_STRING).append(QUOTES).append(COLON).append(QUOTES).append(uiString).append(QUOTES).append(COMMA)
                                   .append(QUOTES).append(FIELD_API_STRING).append(QUOTES).append(COLON).append(QUOTES).append(apiString).append(QUOTES).append(COMMA)
                                   .append(QUOTES).append(FIELD_MAINTAINED).append(QUOTES).append(COLON).append(QUOTES).append(maintained).append(COMMA)
-                                  .append(QUOTES).append(FIELD_SYNONYMS).append(QUOTES).append(COLON).append(QUOTES).append(synonyms.stream().collect(Collectors.joining(QUOTES_COMMA_QUOTES, SQUARE_BRACKET_OPEN_QUOTES, SQUARE_BRACKET_CLOSE_QUOTES)))
+                                  .append(QUOTES).append(FIELD_SYNONYMS).append(QUOTES).append(COLON).append(QUOTES).append(synonyms.stream().collect(
+        Collectors.joining(QUOTES_COMMA_QUOTES, SQUARE_BRACKET_OPEN_QUOTES, SQUARE_BRACKET_CLOSE_QUOTES)))
                                   .append(CURLY_BRACKET_CLOSE)
                                   .toString();
     }
