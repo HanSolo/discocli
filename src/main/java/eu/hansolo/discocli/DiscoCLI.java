@@ -67,7 +67,7 @@ import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
 @Command(
     name        = "discocli",
     description = "Download a JDK pkg defined by the given parameters",
-    version     = "17.0.3"
+    version     = "17.0.4"
 )
 public class DiscoCLI implements Callable<Integer> {
 
@@ -114,19 +114,20 @@ public class DiscoCLI implements Callable<Integer> {
         try {
             final URL downloadUrl = new URL(url);
             try (InputStream in = downloadUrl.openStream()) {
-                final OutputStream out         = new FileOutputStream(filename);
-                final byte         data[]      = new byte[4096];
-                long               total       = 0;
-                int                count       = 0;
-                int                oldProgress = 0;
-                while ((count = in.read(data)) != -1) {
-                    total += count;
-                    if (size > 0) {
-                        int progress = (int) (total * 100 / size);
-                        IntStream.range(0, (progress - oldProgress)).forEach(i -> System.out.print('.'));
-                        oldProgress = progress;
+                try (OutputStream out = new FileOutputStream(filename)) {
+                    final byte data[]      = new byte[4096];
+                    long       total       = 0;
+                    int        count       = 0;
+                    int        oldProgress = 0;
+                    while ((count = in.read(data)) != -1) {
+                        total += count;
+                        if (size > 0) {
+                            int progress = (int) (total * 100 / size);
+                            IntStream.range(0, (progress - oldProgress)).forEach(i -> System.out.print('.'));
+                            oldProgress = progress;
+                        }
+                        out.write(data, 0, count);
                     }
-                    out.write(data, 0, count);
                 }
             }
             return 0;
@@ -346,7 +347,7 @@ public class DiscoCLI implements Callable<Integer> {
                 return 1;
             }
 
-            final boolean majorVersionOnly = null == versionNumber ? false : (versionNumber.getInterim().getAsInt() == 0 && versionNumber.getUpdate().getAsInt() == 0 && versionNumber.getPatch().getAsInt() == 0);
+            final boolean majorVersionOnly = null != versionNumber && (versionNumber.getInterim().getAsInt() == 0 && versionNumber.getUpdate().getAsInt() == 0 && versionNumber.getPatch().getAsInt() == 0);
 
             final String distributionParam         = "?distro=" + distro.getApiString();
             final String versionParam              = null == versionNumber ? "" : "&version=" + URLEncoder.encode(versionNumber.toString(OutputFormat.FULL_COMPRESSED, true, true), StandardCharsets.UTF_8);
@@ -377,22 +378,21 @@ public class DiscoCLI implements Callable<Integer> {
 
             HttpResponse<String> response = Helper.get(request);
             if (null == response) {
-                System.out.println(Ansi.AUTO.string("@|red \nError retrieving pkg info from Disco API |@ \n"));
+                System.out.println(Ansi.AUTO.string(Constants.DEFAULT_ERROR_MSG));
                 return 1;
             } else if (response.statusCode() != 200) {
-                switch (response.statusCode()) {
-                    case 400 -> {
-                        System.out.println(Ansi.AUTO.string("@|red \nSorry, defined pkg not found in Disco API |@ \n"));
-                        if (null != versionNumber) {
-                            List<Pkg> availablePkgs = Helper.getPkgsForDistributionAndMajorVersion(distro.get(), versionNumber.getFeature().getAsInt(), operatingSystem, libcType, architecture, packageType, archiveType, ea);
-                            System.out.println(Ansi.AUTO.string("@|cyan,bold \nPackages available for " + distro.getUiString() + " for version " + versionNumber.getFeature().getAsInt() + ": |@"));
-                            availablePkgs.stream()
-                                         .sorted(Comparator.comparing(Pkg::getOperatingSystem).thenComparing(Pkg::getJavaVersion).reversed().thenComparing(Pkg::getArchitecture).thenComparing(Pkg::getArchiveType).thenComparing(Pkg::getPackageType))
-                                         .forEach(pkg -> System.out.println(pkg.toCliString()));
-                            System.out.println();
-                        }
+                if (400 == response.statusCode()) {
+                    System.out.println(Ansi.AUTO.string("@|red \nSorry, defined pkg not found in Disco API |@ \n"));
+                    if (null != versionNumber) {
+                        List<Pkg> availablePkgs = Helper.getPkgsForDistributionAndMajorVersion(distro.get(), versionNumber.getFeature().getAsInt(), operatingSystem, libcType, architecture, packageType, archiveType, ea);
+                        System.out.println(Ansi.AUTO.string("@|cyan,bold \nPackages available for " + distro.getUiString() + " for version " + versionNumber.getFeature().getAsInt() + ": |@"));
+                        availablePkgs.stream()
+                                     .sorted(Comparator.comparing(Pkg::getOperatingSystem).thenComparing(Pkg::getJavaVersion).reversed().thenComparing(Pkg::getArchitecture).thenComparing(Pkg::getArchiveType).thenComparing(Pkg::getPackageType))
+                                     .forEach(pkg -> System.out.println(pkg.toCliString()));
+                        System.out.println();
                     }
-                    default -> System.out.println(Ansi.AUTO.string("@|red \nError retrieving pkg info from Disco API |@ \n"));
+                } else {
+                    System.out.println(Ansi.AUTO.string(Constants.DEFAULT_ERROR_MSG));
                 }
                 return 1;
             } else {
@@ -439,7 +439,7 @@ public class DiscoCLI implements Callable<Integer> {
                 String               urlRequest  = new StringBuilder().append(Constants.DISCO_API_URL).append(Constants.IDS_ENDPOINT).append(pkg.getId()).toString();
                 HttpResponse<String> urlResponse = Helper.get(urlRequest);
                 if (null == urlResponse) {
-                    System.out.println(Ansi.AUTO.string("@|red \nError retrieving pkg info from Disco API |@ \n"));
+                    System.out.println(Ansi.AUTO.string(Constants.DEFAULT_ERROR_MSG));
                     return 1;
                 } else if (urlResponse.statusCode() != 200) {
                     System.out.println(Ansi.AUTO.string("@|red \nError retrieving pkg info from Disco API with status code " + response.statusCode() + " |@ \n"));

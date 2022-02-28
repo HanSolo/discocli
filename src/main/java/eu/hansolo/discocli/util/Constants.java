@@ -36,4 +36,6 @@ public class Constants {
     public static final String FIELD_CHECKSUM_URI        = "checksum_uri";
     public static final String FIELD_CHECKSUM            = "checksum";
     public static final String FIELD_CHECKSUM_TYPE       = "checksum_type";
+
+    public static final String DEFAULT_ERROR_MSG         = "@|red \nError retrieving pkg info from Disco API |@ \n";
 }

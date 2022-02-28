@@ -302,7 +302,7 @@ public enum Distro implements Api {
         return getAsList().stream()
                           .filter(distro -> Distro.NONE != distro)
                           .filter(distro -> Distro.NOT_FOUND != distro)
-                          .filter(distro -> distro.isMaintained())
+                          .filter(Distro::isMaintained)
                           .sorted(Comparator.comparing(Distro::name).reversed())
                           .collect(Collectors.toList());
     }

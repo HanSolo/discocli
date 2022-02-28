@@ -310,36 +310,8 @@ public class Helper {
                                          .build();
         try {
             HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
-                return response;
-            } else {
-                return response;
-            }
+            return response;
         } catch (CompletionException | InterruptedException | IOException e) {
-            return null;
-        }
-    }
-
-    public static final HttpResponse<String> httpHeadRequestSync(final String uri) {
-        if (null == httpClient) { httpClient = createHttpClient(); }
-
-        final HttpRequest request = HttpRequest.newBuilder()
-                                               .method("HEAD", HttpRequest.BodyPublishers.noBody())
-                                               .uri(URI.create(uri))
-                                               .build();
-
-        try {
-            HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
-                return response;
-            } else {
-                // Problem with url request
-                //LOGGER.debug("Error executing get request {}", uri);
-                //LOGGER.debug("Response (Status Code {}) {} ", response.statusCode(), response.body());
-                return response;
-            }
-        } catch (CompletionException | InterruptedException | IOException e) {
-            //LOGGER.error("Error executing get request {} : {}", uri, e.getMessage());
             return null;
         }
     }

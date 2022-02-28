@@ -106,29 +106,29 @@ public class Pkg {
         final JsonObject json = gson.fromJson(packageJson, JsonObject.class);
 
         this.id                   = json.has(FIELD_ID)                     ? json.get(FIELD_ID).getAsString() : "";
-        this.distribution         = json.has(FIELD_DISTRIBUTION)           ? Helper.getDistributionFromText(json.get(FIELD_DISTRIBUTION).getAsString())      : null;
-        this.majorVersion         = json.has(FIELD_MAJOR_VERSION)          ? new MajorVersion(json.get(FIELD_MAJOR_VERSION).getAsInt())                      : new MajorVersion(1);
-        this.javaVersion          = json.has(FIELD_JAVA_VERSION)           ? Semver.fromText(json.get(FIELD_JAVA_VERSION).getAsString()).getSemver1()        : new Semver(new VersionNumber());
-        this.distributionVersion  = json.has(FIELD_DISTRIBUTION)           ? VersionNumber.fromText(json.get(FIELD_DISTRIBUTION_VERSION).getAsString())      : new VersionNumber();
-        this.latestBuildAvailable = json.has(FIELD_LATEST_BUILD_AVAILABLE) ? json.get(FIELD_LATEST_BUILD_AVAILABLE).getAsBoolean()                           : Boolean.FALSE;
-        this.architecture         = json.has(FIELD_ARCHITECTURE)           ? Architecture.fromText(json.get(FIELD_ARCHITECTURE).getAsString())               : Architecture.NOT_FOUND;
-        this.fpu                  = json.has(FIELD_FPU)                    ? FPU.fromText(json.get(FIELD_FPU).getAsString())                                 : FPU.NOT_FOUND;
-        this.operatingSystem      = json.has(FIELD_OPERATING_SYSTEM)       ? OperatingSystem.fromText(json.get(FIELD_OPERATING_SYSTEM).getAsString())        : OperatingSystem.NOT_FOUND;
-        this.libcType             = json.has(FIELD_LIB_C_TYPE)             ? LibCType.fromText(json.get(FIELD_LIB_C_TYPE).getAsString())                     : LibCType.NOT_FOUND;
-        this.packageType          = json.has(FIELD_PACKAGE_TYPE)           ? PackageType.fromText(json.get(FIELD_PACKAGE_TYPE).getAsString())                : PackageType.NOT_FOUND;
-        this.releaseStatus        = json.has(FIELD_RELEASE_STATUS)         ? ReleaseStatus.fromText(json.get(FIELD_RELEASE_STATUS).getAsString())            : ReleaseStatus.NOT_FOUND;
-        this.archiveType          = json.has(FIELD_ARCHIVE_TYPE)           ? ArchiveType.fromText(json.get(FIELD_ARCHIVE_TYPE).getAsString())                : ArchiveType.NOT_FOUND;
-        this.termOfSupport        = json.has(FIELD_TERM_OF_SUPPORT)        ? TermOfSupport.fromText(json.get(FIELD_TERM_OF_SUPPORT).getAsString())           : TermOfSupport.NOT_FOUND;
-        this.javafxBundled        = json.has(FIELD_JAVAFX_BUNDLED)         ? json.get(FIELD_JAVAFX_BUNDLED).getAsBoolean()                                   : Boolean.FALSE;
-        this.directlyDownloadable = json.has(FIELD_DIRECTLY_DOWNLOADABLE)  ? json.get(FIELD_DIRECTLY_DOWNLOADABLE).getAsBoolean()                            : Boolean.FALSE;
-        this.filename             = json.has(FIELD_FILENAME) ? json.get(FIELD_FILENAME).getAsString() : "";
-        this.ephemeralId          = json.has(FIELD_EPHEMERAL_ID)           ? json.get(FIELD_EPHEMERAL_ID).getAsString()                                      : "";
-        this.freeUseInProduction  = json.has(FIELD_FREE_USE_IN_PROD)       ? json.get(FIELD_FREE_USE_IN_PROD).getAsBoolean()                                 : Boolean.TRUE;
-        this.tckTested            = json.has(FIELD_TCK_TESTED)             ? Verification.fromText(json.get(FIELD_TCK_TESTED).getAsString())                 : Verification.UNKNOWN;
-        this.tckCertUri           = json.has(FIELD_TCK_CERT_URI)           ? json.get(FIELD_TCK_CERT_URI).getAsString()                                      : "";
-        this.aqavitCertified      = json.has(FIELD_AQAVIT_CERTIFIED)       ? Verification.fromText(json.get(FIELD_AQAVIT_CERTIFIED).getAsString())           : Verification.UNKNOWN;
-        this.aqavitCertUri        = json.has(FIELD_AQAVIT_CERT_URI)        ? json.get(FIELD_AQAVIT_CERT_URI).getAsString()                                   : "";
-        this.size                 = json.has(FIELD_SIZE)                   ? json.get(FIELD_SIZE).getAsLong()                                                : -1;
+        this.distribution         = json.has(FIELD_DISTRIBUTION)           ? Helper.getDistributionFromText(json.get(FIELD_DISTRIBUTION).getAsString()) : null;
+        this.majorVersion         = json.has(FIELD_MAJOR_VERSION)          ? new MajorVersion(json.get(FIELD_MAJOR_VERSION).getAsInt())                 : new MajorVersion(1);
+        this.javaVersion          = json.has(FIELD_JAVA_VERSION)           ? Semver.fromText(json.get(FIELD_JAVA_VERSION).getAsString()).getSemver1()   : new Semver(new VersionNumber());
+        this.distributionVersion  = json.has(FIELD_DISTRIBUTION)           ? VersionNumber.fromText(json.get(FIELD_DISTRIBUTION_VERSION).getAsString()) : new VersionNumber();
+        this.latestBuildAvailable = json.has(FIELD_LATEST_BUILD_AVAILABLE) ? json.get(FIELD_LATEST_BUILD_AVAILABLE).getAsBoolean()                      : Boolean.FALSE;
+        this.architecture         = json.has(FIELD_ARCHITECTURE)           ? Architecture.fromText(json.get(FIELD_ARCHITECTURE).getAsString())          : Architecture.NOT_FOUND;
+        this.fpu                  = json.has(FIELD_FPU)                    ? FPU.fromText(json.get(FIELD_FPU).getAsString())                            : FPU.NOT_FOUND;
+        this.operatingSystem      = json.has(FIELD_OPERATING_SYSTEM)       ? OperatingSystem.fromText(json.get(FIELD_OPERATING_SYSTEM).getAsString())   : OperatingSystem.NOT_FOUND;
+        this.libcType             = json.has(FIELD_LIB_C_TYPE)             ? LibCType.fromText(json.get(FIELD_LIB_C_TYPE).getAsString())                : LibCType.NOT_FOUND;
+        this.packageType          = json.has(FIELD_PACKAGE_TYPE)           ? PackageType.fromText(json.get(FIELD_PACKAGE_TYPE).getAsString())           : PackageType.NOT_FOUND;
+        this.releaseStatus        = json.has(FIELD_RELEASE_STATUS)         ? ReleaseStatus.fromText(json.get(FIELD_RELEASE_STATUS).getAsString())       : ReleaseStatus.NOT_FOUND;
+        this.archiveType          = json.has(FIELD_ARCHIVE_TYPE)           ? ArchiveType.fromText(json.get(FIELD_ARCHIVE_TYPE).getAsString())           : ArchiveType.NOT_FOUND;
+        this.termOfSupport        = json.has(FIELD_TERM_OF_SUPPORT)        ? TermOfSupport.fromText(json.get(FIELD_TERM_OF_SUPPORT).getAsString())      : TermOfSupport.NOT_FOUND;
+        this.javafxBundled        = json.has(FIELD_JAVAFX_BUNDLED)         ? json.get(FIELD_JAVAFX_BUNDLED).getAsBoolean()                              : Boolean.FALSE;
+        this.directlyDownloadable = json.has(FIELD_DIRECTLY_DOWNLOADABLE)  ? json.get(FIELD_DIRECTLY_DOWNLOADABLE).getAsBoolean()                       : Boolean.FALSE;
+        this.filename             = json.has(FIELD_FILENAME)               ? json.get(FIELD_FILENAME).getAsString()                                     : "";
+        this.ephemeralId          = json.has(FIELD_EPHEMERAL_ID)           ? json.get(FIELD_EPHEMERAL_ID).getAsString()                                 : "";
+        this.freeUseInProduction  = json.has(FIELD_FREE_USE_IN_PROD)       ? json.get(FIELD_FREE_USE_IN_PROD).getAsBoolean()                            : Boolean.TRUE;
+        this.tckTested            = json.has(FIELD_TCK_TESTED)             ? Verification.fromText(json.get(FIELD_TCK_TESTED).getAsString())            : Verification.UNKNOWN;
+        this.tckCertUri           = json.has(FIELD_TCK_CERT_URI)           ? json.get(FIELD_TCK_CERT_URI).getAsString()                                 : "";
+        this.aqavitCertified      = json.has(FIELD_AQAVIT_CERTIFIED)       ? Verification.fromText(json.get(FIELD_AQAVIT_CERTIFIED).getAsString())      : Verification.UNKNOWN;
+        this.aqavitCertUri        = json.has(FIELD_AQAVIT_CERT_URI)        ? json.get(FIELD_AQAVIT_CERT_URI).getAsString()                              : "";
+        this.size                 = json.has(FIELD_SIZE)                   ? json.get(FIELD_SIZE).getAsLong()                                           : -1;
     }
 
 
@@ -157,7 +157,7 @@ public class Pkg {
 
     public Architecture getArchitecture() { return architecture; }
 
-    public Bitness getBitness()            { return architecture == Architecture.NOT_FOUND ? Bitness.NOT_FOUND : architecture.getBitness(); }
+    public Bitness getBitness() { return architecture == Architecture.NOT_FOUND ? Bitness.NOT_FOUND : architecture.getBitness(); }
 
     public FPU getFpu() { return fpu; }
 
@@ -223,8 +223,8 @@ public class Pkg {
                                   .append(Ansi.AUTO.string("@|yellow  -arc |@")).append(architecture.getApiString())
                                   .append(Ansi.AUTO.string("@|yellow  -at |@")).append(archiveType.getApiString())
                                   .append(Ansi.AUTO.string("@|yellow  -pt |@")).append(packageType.getApiString())
-                                  .append(javafxBundled == true ? Ansi.AUTO.string("@|yellow  -fx|@") : "")
-                                  .append(ReleaseStatus.EA == releaseStatus ? Ansi.AUTO.string("@|yellow  -ea|@") : "")
+                                  .append(Ansi.AUTO.string(javafxBundled ? "@|yellow  -fx |@" : ""))
+                                  .append(ReleaseStatus.EA == releaseStatus ? Ansi.AUTO.string("@|yellow  -ea |@") : "")
                                   .toString();
     }
 

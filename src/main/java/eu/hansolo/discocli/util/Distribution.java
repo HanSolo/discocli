@@ -32,11 +32,11 @@ import static eu.hansolo.jdktools.Constants.SQUARE_BRACKET_OPEN_QUOTES;
 
 
 public record Distribution(String name, String uiString, String apiString, boolean maintained, List<String> synonyms, String spacer) {
-    public  static final String       FIELD_NAME       = "name";
-    public  static final String       FIELD_UI_STRING  = "ui_string";
-    public  static final String       FIELD_API_STRING = "api_string";
-    public  static final String       FIELD_MAINTAINED = "maintained";
-    public  static final String       FIELD_SYNONYMS   = "synonyms";
+    public static final String FIELD_NAME       = "name";
+    public static final String FIELD_UI_STRING  = "ui_string";
+    public static final String FIELD_API_STRING = "api_string";
+    public static final String FIELD_MAINTAINED = "maintained";
+    public static final String FIELD_SYNONYMS   = "synonyms";
 
 
     // ******************** Methods *******************************************
