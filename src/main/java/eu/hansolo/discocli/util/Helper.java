@@ -27,7 +27,10 @@ import eu.hansolo.jdktools.ArchiveType;
 import eu.hansolo.jdktools.LibCType;
 import eu.hansolo.jdktools.OperatingSystem;
 import eu.hansolo.jdktools.PackageType;
+import eu.hansolo.jdktools.TermOfSupport;
+import eu.hansolo.jdktools.versioning.VersionNumber;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -36,6 +39,9 @@ import java.net.http.HttpClient.Version;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,6 +50,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletionException;
+import java.util.stream.Collectors;
 
 
 public class Helper {
@@ -54,7 +61,7 @@ public class Helper {
     // ******************** Methods *******************************************
     private static HttpClient httpClient;
 
-    public static Distribution getDistributionFromText(final String text) {
+    public static final Distribution getDistributionFromText(final String text) {
         if (null == text) { return null; }
         switch (text) {
             case "zulu":
@@ -250,7 +257,7 @@ public class Helper {
         }
     }
 
-    public static List<Pkg> getPkgsForDistributionAndMajorVersion(final Distribution distribution, final int majorVersion, final OperatingSystem operatingSystem, final LibCType libcType, final Architecture architecture, final PackageType packageType, final ArchiveType archiveType, final boolean includeEA) {
+    public static final List<Pkg> getPkgsForDistributionAndMajorVersion(final Distribution distribution, final int majorVersion, final OperatingSystem operatingSystem, final LibCType libcType, final Architecture architecture, final PackageType packageType, final ArchiveType archiveType, final boolean includeEA) {
         StringBuilder builder = new StringBuilder().append(Constants.DISCO_API_URL).append(Constants.PACKAGES_ENDPOINT).append("?distro=").append(distribution.apiString()).append("&version=").append(majorVersion);
         if (null != operatingSystem) {
             builder.append("&operating_system=").append(operatingSystem.getApiString());
@@ -287,6 +294,51 @@ public class Helper {
         Collections.sort(pkgs, Comparator.comparing(Pkg::getJavaVersion).reversed());
         return pkgs;
     }
+
+    public static final List<String> readTextFileToList(final String filename) throws IOException {
+        final Path           path   = Paths.get(filename);
+        final BufferedReader reader = Files.newBufferedReader(path);
+        return reader.lines().collect(Collectors.toList());
+    }
+
+
+    public static final TermOfSupport getTermOfSupport(final VersionNumber versionNumber) {
+        if (!versionNumber.getFeature().isPresent() || versionNumber.getFeature().isEmpty()) {
+            throw new IllegalArgumentException("VersionNumber need to have a feature version");
+        }
+        return getTermOfSupport(versionNumber.getFeature().getAsInt());
+    }
+    public static final TermOfSupport getTermOfSupport(final int featureVersion) {
+        if (featureVersion < 1) { throw new IllegalArgumentException("Feature version number cannot be smaller than 1"); }
+        if (isLTS(featureVersion)) {
+            return TermOfSupport.LTS;
+        } else if (isMTS(featureVersion)) {
+            return TermOfSupport.MTS;
+        } else if (isSTS(featureVersion)) {
+            return TermOfSupport.STS;
+        } else {
+            return TermOfSupport.NOT_FOUND;
+        }
+    }
+    public static final boolean isSTS(final int featureVersion) {
+        if (featureVersion < 9) { return false; }
+        switch(featureVersion) {
+            case 9 :
+            case 10: return true;
+            default: return !isLTS(featureVersion);
+        }
+    }
+    public static final boolean isMTS(final int featureVersion) {
+        if (featureVersion < 13) { return false; }
+        return (!isLTS(featureVersion)) && featureVersion % 2 != 0;
+    }
+    public static final boolean isLTS(final int featureVersion) {
+        if (featureVersion < 1) { throw new IllegalArgumentException("Feature version number cannot be smaller than 1"); }
+        if (featureVersion <= 8) { return true; }
+        if (featureVersion < 11) { return false; }
+        return ((featureVersion - 11.0) / 6.0) % 1 == 0;
+    }
+
 
 
     // ******************** REST calls ****************************************

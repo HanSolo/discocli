@@ -20,7 +20,7 @@
 
 Disco CLI is a command line interface for the [foojay.io](https://foojay.io) [Disco API](https://github.com/foojayio/discoapi)
 
-You can either use the jar file and start it with java -jar discocli-17.0.4.jar (which needs JDK 17 to be
+You can either use the jar file and start it with java -jar discocli-17.0.5.jar (which needs JDK 17 to be
 the current jdk) or
 you can use the native image and call it via discocli.
 At the moment there are binaries available for 
@@ -30,7 +30,7 @@ At the moment there are binaries available for
 
 The available binaries can be found [here](https://github.com/HanSolo/discocli/releases)
 
-From version 17.0.4 on now the native images will always be build on each push using [github actions](https://github.com/HanSolo/discocli/actions) and can be downloaded from the action itself.
+From version 17.0.5 on now the native images will always be build on each push using [github actions](https://github.com/HanSolo/discocli/actions) and can be downloaded from the action itself.
 Keep in mind that you might have to allow the downloaded binary to be executed on your local machine.
 On Macos you need to open the binary by CTRL+RIGHT click and Open it once in the Finder and then it will work from the command line.
 On Windows you have to double click the exe file and agree to execute it once, after that you can execute it also from the command line.
@@ -47,7 +47,7 @@ Get help by using the ```-h or --help``` parameter as follows:
 
 ```shell
 Using the jar:
-java -jar discocli-17.0.4.jar -h
+java -jar discocli-17.0.5.jar -h
 
 Using the binary:
 discocli -h
@@ -68,11 +68,11 @@ the lib c type parameter in combination with linux as os e.g. ```-os linux -lc m
 
 Get Zulu with version 17.0.2 for windows including JavaFX:
 ```shell
-java -jar discocli-17.0.4.jar -d zulu -v 17.0.2 -fx -os windows
+java -jar discocli-17.0.5.jar -d zulu -v 17.0.2 -fx -os windows
 ```
 Get the latest version of JDK 17 for Temurin on Linux:
 ```shell
-java -jar discocli-17.0.4.jar -d temurin -v 17 -os linux -latest
+java -jar discocli-17.0.5.jar -d temurin -v 17 -os linux -latest
 ```
 
 
@@ -105,6 +105,63 @@ discocli -d liberica -v 12.0.1 -os linux -lc glibc -arc amd64 -at tar.gz -pt jdk
 discocli -d liberica -v 12 -os linux -lc glibc -arc amd64 -at tar.gz -pt jdk
 ```
 
+Find distributions in a given folder
+```shell
+discocli -fd "/System/Volumes/Data/Library/Java/JavaVirtualMachines/"
+
+Distributions found
+graalvm_ce17,22.0.0.2,macos,x86_64
+zulu,11.0.14.1,macos,aarch64
+zulu,16.0.1,macos,aarch64,fx
+*zulu,17.0.2,macos,aarch64
+zulu,18-ea+34,macos,aarch64
+zulu,8.0.322+6,macos,aarch64,fx
+```
+The distribution that is currently defined in JAVA_HOME is marked with an '*'.
+If you would like to check the default path for your operating system you can simply use
+```shell
+discocli -fd ""
+
+Distributions found
+graalvm_ce17,22.0.0.2,macos,x86_64
+zulu,11.0.14.1,macos,aarch64
+zulu,16.0.1,macos,aarch64,fx
+*zulu,17.0.2,macos,aarch64
+zulu,18-ea+34,macos,aarch64
+zulu,8.0.322+6,macos,aarch64,fx
+```
+The default paths for the different operating systems are:
+```
+Macos  : /System/Volumes/Data/Library/Java/JavaVirtualMachines/
+Windows: C:\Program Files\Java\
+Linux  : /usr/lib/jvm
+```
+
+You can check if there is an update available for a given distribution using the following command
+```shell
+Find updates for Zulu 16.0.1 for MacOS on x64 as a JRE:
+
+discocli -fu "zulu,16.0.1,macos,x64,jre"
+
+Updates found
+
+discocli -d zulu -v 16.0.2 -os macos -lc libc -arc x64 -at dmg -pt jre
+discocli -d zulu -v 16.0.2 -os macos -lc libc -arc x64 -at zip -pt jre
+discocli -d zulu -v 16.0.2 -os macos -lc libc -arc x64 -at tar.gz -pt jre
+
+
+
+Find updates for Liberica 17.0.1 for Windows on x64 as a JDK incl. JavaFX:
+
+discocli -fu "liberica,17.0.1,windows,x64,jdk,fx"
+
+Updates found
+
+discocli -d liberica -v 17.0.2 -os windows -lc c_std_lib -arc amd64 -at zip -pt jdk -fx
+discocli -d liberica -v 17.0.2 -os windows -lc c_std_lib -arc amd64 -at msi -pt jdk -fx
+
+```
+
 <br>
 
 #### Build native image with GraalVM:
@@ -124,13 +181,13 @@ cd /build/libs
 ```
 ```shell
 Windows:
-%GRAALVM_HOME%\bin\native-image.cmd -jar discocli-17.0.4.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
+%GRAALVM_HOME%\bin\native-image.cmd -jar discocli-17.0.5.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
 
 Linux:
-$GRAALVM_HOME/bin/native-image -jar discocli-17.0.4.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
+$GRAALVM_HOME/bin/native-image -jar discocli-17.0.5.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
 
 Macos:
-$GRAALVM_HOME/bin/native-image -jar ./discocli-17.0.4.jar --no-server -H:Name=discocli --no-fallback --enable-http --enable-https
+$GRAALVM_HOME/bin/native-image -jar ./discocli-17.0.5.jar --no-server -H:Name=discocli --no-fallback --enable-http --enable-https
 ```
 
 #### Usage
@@ -162,6 +219,11 @@ Download a JDK pkg defined by the given parameters:
 -fx,  --javafx                Bundled with JavaFX
 
 -f,   --find                  Find available JDK pkgs for given parameters
+
+-fd,  --find-distros          Find distributions in given path (e.g. ./)
+
+-fu,  --find-update           Find update for given distribution in the format DISTRO,VERSION,OPERATING SYSTEM,ARCHITECTURE,PACKAGE TYPE,FX(optional)
+                              (e.g. discocli -fu "zulu,16.0.1,macos,x64,jdk")
 
 -latest                       Latest available for given version number
 

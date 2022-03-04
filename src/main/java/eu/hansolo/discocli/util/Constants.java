@@ -19,9 +19,13 @@
 package eu.hansolo.discocli.util;
 
 
+import java.io.File;
+
+
 public class Constants {
     private Constants() {}
 
+    public static final String HOME_FOLDER               = new StringBuilder(System.getProperty("user.home")).append(File.separator).toString();
     public static final String DISCO_API_URL             = "https://api.foojay.io/disco/v3.0/";
     public static final String DISTRIBUTIONS_ENDPOINT    = "distributions";
     public static final String MAJOR_VERSIONS_ENDPOINT   = "major_versions";
@@ -36,6 +40,8 @@ public class Constants {
     public static final String FIELD_CHECKSUM_URI        = "checksum_uri";
     public static final String FIELD_CHECKSUM            = "checksum";
     public static final String FIELD_CHECKSUM_TYPE       = "checksum_type";
+
+    public static final String[] FEATURES                = { "loom", "panama", "metropolis", "valhalla" };
 
     public static final String DEFAULT_ERROR_MSG         = "@|red \nError retrieving pkg info from Disco API |@ \n";
 }

@@ -23,6 +23,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.hansolo.discocli.util.Constants;
+import eu.hansolo.discocli.util.Detector;
+import eu.hansolo.discocli.util.Distribution;
 import eu.hansolo.discocli.util.Distro;
 import eu.hansolo.discocli.util.Helper;
 import eu.hansolo.discocli.util.Pkg;
@@ -32,7 +34,9 @@ import eu.hansolo.jdktools.LibCType;
 import eu.hansolo.jdktools.OperatingMode;
 import eu.hansolo.jdktools.OperatingSystem;
 import eu.hansolo.jdktools.PackageType;
+import eu.hansolo.jdktools.ReleaseStatus;
 import eu.hansolo.jdktools.util.OutputFormat;
+import eu.hansolo.jdktools.versioning.Semver;
 import eu.hansolo.jdktools.versioning.VersionNumber;
 import eu.hansolo.jdktools.util.Helper.OsArcMode;
 import picocli.CommandLine;
@@ -45,6 +49,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
@@ -52,6 +57,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -59,6 +66,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
@@ -70,6 +78,8 @@ import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
     version     = "17.0.4"
 )
 public class DiscoCLI implements Callable<Integer> {
+    private final Detector detector = new Detector();
+
 
     @Option(names = { "-h", "--help" }, description = "Help") boolean help;
 
@@ -100,6 +110,12 @@ public class DiscoCLI implements Callable<Integer> {
 
     @Option(names = { "-p", "--path" }, description = "The path where the JDK pkg should be saved to")
     private String p = null;
+
+    @Option(names = { "-fd", "--find-distros" }, description = "Find distributions in given path (e.g. \"./\")")
+    private String fd = null;
+
+    @Option(names = { "-fu", "--update-available" }, description = "Find update for given distribution DISTRO,VERSION,OPERATING SYSTEM,ARCHITECTURE,PACKAGE TYPE,FX(optional) (e.g. \"zulu,16.0.1,macos,aarch64,jdk\")")
+    private String fu = null;
 
     @Option(names = { "-ea", "--early-access" }, description = "Include early access builds") boolean ea;
 
@@ -157,21 +173,25 @@ public class DiscoCLI implements Callable<Integer> {
                                                                 .append("[").append(yellow).append(" -fx").append(end).append("]").append(" ")
                                                                 .append("[").append(yellow).append(" -latest").append(end).append("]").append(" ")
                                                                 .append("[").append(yellow).append(" -i").append(end).append("]").append(" ")
-                                                                .append("[").append(yellow).append(" -f").append(end).append("]");
+                                                                .append("[").append(yellow).append(" -f").append(end).append("]").append(" ")
+                                                                .append("[").append(" -fd").append(end).append("=<fd>]")
+                                                                .append("[").append(" -fu").append(end).append("=<fu>]");
                 StringBuilder helpBuilder2 = new StringBuilder().append("\nDownload a JDK pkg defined by the given parameters").append("\n")
-                                                                .append(yellow).append(" -d,   --distribution").append(end).append("=<d> Distribution (e.g. zulu, temurin, etc.)").append("\n")
-                                                                .append(yellow).append(" -v,   --version").append(end).append("=<v> Version (e.g. 17.0.2)").append("\n")
-                                                                .append(yellow).append(" -os,  --operating-system").append(end).append("=<os> Operating system (e.g. windows, linux, macos)").append("\n")
-                                                                .append(yellow).append(" -lc,  --libc-type").append(end).append("=<lc> Lib C type (libc, glibc, c_std_lib, musl)").append("\n")
                                                                 .append(yellow).append(" -arc, --architecture").append(end).append("=<arc> Architecture (e.g. x64, aarch64)").append("\n")
                                                                 .append(yellow).append(" -at,  --archive-type").append(end).append("=<at> Archive tpye (e.g. tar.gz, zip)").append("\n")
-                                                                .append(yellow).append(" -pt,  --package-type").append(end).append("=<pt> Package type (e.g. jdk, jre)").append("\n")
-                                                                .append(yellow).append(" -p,   --path").append(end).append("=<pt> The path where the JDK pkg should be saved to (e.g. /User/hansolo").append("\n")
+                                                                .append(yellow).append(" -d,   --distribution").append(end).append("=<d> Distribution (e.g. zulu, temurin, etc.)").append("\n")
                                                                 .append(yellow).append(" -ea,  --early-access").append(end).append(" Include early access builds").append("\n")
-                                                                .append(yellow).append(" -fx,  --javafx").append(end).append(" Bundled with JavaFX").append("\n")
                                                                 .append(yellow).append(" -f,   --find").append(end).append(" Find available JDK pkgs for given parameters").append("\n")
+                                                                .append(yellow).append(" -fx,  --javafx").append(end).append(" Bundled with JavaFX").append("\n")
+                                                                .append(yellow).append(" -i,   --info").append(end).append(" Info about parameters").append("\n")
                                                                 .append(yellow).append(" -latest").append(end).append(" Latest available for given version number").append("\n")
-                                                                .append(yellow).append(" -i,   --info").append(end).append(" Info about parameters").append("\n");
+                                                                .append(yellow).append(" -lc,  --libc-type").append(end).append("=<lc> Lib C type (libc, glibc, c_std_lib, musl)").append("\n")
+                                                                .append(yellow).append(" -os,  --operating-system").append(end).append("=<os> Operating system (e.g. windows, linux, macos)").append("\n")
+                                                                .append(yellow).append(" -p,   --path").append(end).append("=<pt> The path where the JDK pkg should be saved to (e.g. /User/hansolo").append("\n")
+                                                                .append(yellow).append(" -pt,  --package-type").append(end).append("=<pt> Package type (e.g. jdk, jre)").append("\n")
+                                                                .append(yellow).append(" -fd,  --find-distros").append(end).append("=<fd> Find distributions in given path (e.g. \"./\")").append("\n")
+                                                                .append(yellow).append(" -fu,  --find-update").append(end).append("=<fu> Find update for given distribution DISTRO,VERSION,OPERATING SYSTEM,ARCHITECTURE,PACKAGE TYPE,FX(optional) (e.g. \"zulu,16.0.1,macos,aarch64,jdk\")").append("\n")
+                                                                .append(yellow).append(" -v,   --version").append(end).append("=<v> Version (e.g. 17.0.2)").append("\n");
 
                 System.out.println(Ansi.AUTO.string(helpBuilder1.toString()));
                 System.out.println(Ansi.AUTO.string(helpBuilder2.toString()));
@@ -203,6 +223,68 @@ public class DiscoCLI implements Callable<Integer> {
                 System.out.println();
                 System.out.println(Ansi.AUTO.string("@|bold,cyan ---------- Package types ---------- |@"));
                 PackageType.getAsList().stream().filter(packageType -> PackageType.NONE != packageType).filter(packageType -> PackageType.NOT_FOUND != packageType).forEach(packageType -> System.out.println(packageType.getApiString()));
+                return 0;
+            }
+
+            if (null != fd) {
+                detector.detectDistributions(fd.split(","));
+                return 0;
+            }
+
+            if (null != fu) {
+                if (null == fu || fu.isEmpty()) {
+                    System.out.println(Ansi.AUTO.string("@|red \nPlease specify the distribution you would like to check e.g. zulu,16.0.1,macos,x64,jdk,fx |@ \n"));
+                    return 1;
+                }
+                String[] parts = fu.split(",");
+                if (parts.length < 5) {
+                    System.out.println(Ansi.AUTO.string("@|red \nPlease specify the distribution you would like to check e.g. zulu,16.0.1,macos,x64,jdk,fx |@ \n"));
+                    return 1;
+                }
+
+                Distro          distro          = Distro.fromText(parts[0]);
+                VersionNumber   versionNumber   = VersionNumber.fromText(parts[1]);
+                OperatingSystem operatingSystem = OperatingSystem.fromText(parts[2]);
+                Architecture    architecture    = Architecture.fromText(parts[3]);
+                PackageType     packageType     = PackageType.fromText(parts[4]);
+
+                if (Distro.NOT_FOUND          == distro          ||
+                    OperatingSystem.NOT_FOUND == operatingSystem ||
+                    Architecture.NOT_FOUND    == architecture    ||
+                    PackageType.NOT_FOUND     == packageType) {
+                    System.out.println(Ansi.AUTO.string("@|red \nPlease check your parameters e.g. DISTRO,VERSION,OPERATING SYSTEM,ARCHITECTURE,PACKAGE TYPE,FX(optional) |@ \n"));
+                    return 1;
+                }
+
+                boolean         earlyAccess     = ReleaseStatus.EA == versionNumber.getReleaseStatus().orElse(ReleaseStatus.GA);
+                boolean         javafxBundled;
+                if (parts.length == 6) {
+                    javafxBundled = parts[5].equalsIgnoreCase("fx");
+                } else {
+                    javafxBundled = false;
+                }
+
+                List<Pkg> pkgs = Helper.getPkgsForDistributionAndMajorVersion(distro.get(), versionNumber.getFeature().getAsInt(), operatingSystem, operatingSystem.getLibCType(), architecture, packageType, null, earlyAccess);
+
+                List<Pkg> updates;
+                if (earlyAccess) {
+                    updates = pkgs.stream()
+                                  .filter(pkg -> pkg.isJavaFXBundled() == javafxBundled)
+                                  .filter(pkg -> pkg.getJavaVersion().getVersionNumber().compareTo(versionNumber) > 0)
+                                  .collect(Collectors.toList());
+                } else {
+                    VersionNumber withoutBuild = VersionNumber.fromText(versionNumber.toString(OutputFormat.REDUCED_COMPRESSED, true, false));
+                    updates = pkgs.stream()
+                                  .filter(pkg -> pkg.isJavaFXBundled() == javafxBundled)
+                                  .filter(pkg -> VersionNumber.fromText(pkg.getJavaVersion().getVersionNumber().toString(OutputFormat.REDUCED_COMPRESSED, true, false)).compareTo(withoutBuild) > 0)
+                                  .collect(Collectors.toList());
+                }
+                if (updates.isEmpty()) {
+                    System.out.println(Ansi.AUTO.string("@|cyan \nNo update found |@ \n"));
+                } else {
+                    System.out.println(Ansi.AUTO.string("@|cyan \nUpdates found |@ \n"));
+                    updates.forEach(pkg -> System.out.println(pkg.toCliString()));
+                }
                 return 0;
             }
 
@@ -481,7 +563,11 @@ public class DiscoCLI implements Callable<Integer> {
             }
             return 1;
         } catch (Exception e) {
-            System.out.println(Ansi.AUTO.string("@|red \nSomething went wrong, please check your parameters |@ \n"));
+            if (e instanceof UncheckedIOException && e.getMessage().endsWith("Operation not permitted")) {
+                System.out.println(Ansi.AUTO.string("@|red \nScanning of given path not permitted |@ \n"));
+            } else {
+                System.out.println(Ansi.AUTO.string("@|red \nSomething went wrong, please check your parameters |@ \n"));
+            }
             return 1;
         }
     }
