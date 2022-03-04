@@ -74,8 +74,6 @@ import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
     version     = "17.0.5"
 )
 public class DiscoCLI implements Callable<Integer> {
-    private final Detector detector = new Detector();
-
 
     @Option(names = { "-h", "--help" }, description = "Help") boolean help;
 
@@ -223,6 +221,7 @@ public class DiscoCLI implements Callable<Integer> {
             }
 
             if (null != fd) {
+                final Detector detector = new Detector();
                 detector.detectDistributions(fd.split(","));
                 return 0;
             }
