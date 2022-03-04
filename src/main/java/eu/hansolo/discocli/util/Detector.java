@@ -78,12 +78,17 @@ public class Detector {
     private              OsArcMode       osArcMode                 = eu.hansolo.jdktools.util.Helper.getOperaringSystemArchitectureOperatingMode();
     private              String          javaFile                  = WINDOWS == osArcMode.operatingSystem() ? "java.exe" : "java";
     private              String          javaHome                  = "";
-    private              String          javafxPropertiesFile      = "javafx.properties";
 
 
     public Detector() {
         getJavaHome();
-        if (this.javaHome.isEmpty()) { this.javaHome = System.getProperties().get("java.home").toString(); }
+        if (null == this.javaHome || this.javaHome.isEmpty()) {
+            if (System.getProperties() != null) {
+                if (System.getProperties().get("java.home") != null) {
+                    this.javaHome = System.getProperties().get("java.home").toString();
+                }
+            }
+        }
     }
 
 
