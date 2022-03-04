@@ -19,15 +19,10 @@
 package eu.hansolo.discocli.util;
 
 import eu.hansolo.jdktools.Architecture;
-import eu.hansolo.jdktools.ArchiveType;
-import eu.hansolo.jdktools.LibCType;
 import eu.hansolo.jdktools.OperatingMode;
 import eu.hansolo.jdktools.OperatingSystem;
-import eu.hansolo.jdktools.PackageType;
-import eu.hansolo.jdktools.ReleaseStatus;
 import eu.hansolo.jdktools.util.Helper.OsArcMode;
 import eu.hansolo.jdktools.util.OutputFormat;
-import eu.hansolo.jdktools.versioning.Semver;
 import eu.hansolo.jdktools.versioning.VersionNumber;
 import picocli.CommandLine.Help.Ansi;
 

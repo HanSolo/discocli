@@ -301,7 +301,6 @@ public class Helper {
         return reader.lines().collect(Collectors.toList());
     }
 
-
     public static final TermOfSupport getTermOfSupport(final VersionNumber versionNumber) {
         if (!versionNumber.getFeature().isPresent() || versionNumber.getFeature().isEmpty()) {
             throw new IllegalArgumentException("VersionNumber need to have a feature version");
@@ -338,7 +337,6 @@ public class Helper {
         if (featureVersion < 11) { return false; }
         return ((featureVersion - 11.0) / 6.0) % 1 == 0;
     }
-
 
 
     // ******************** REST calls ****************************************
