@@ -168,8 +168,8 @@ public class DiscoCLI implements Callable<Integer> {
                                                                 .append("[").append(yellow).append(" -latest").append(end).append("]").append(" ")
                                                                 .append("[").append(yellow).append(" -i").append(end).append("]").append(" ")
                                                                 .append("[").append(yellow).append(" -f").append(end).append("]").append(" ")
-                                                                .append("[").append(" -fd").append(end).append("=<fd>]")
-                                                                .append("[").append(" -fu").append(end).append("=<fu>]");
+                                                                .append("[").append(yellow).append(" -fd").append(end).append("=<fd>]")
+                                                                .append("[").append(yellow).append(" -fu").append(end).append("=<fu>]");
                 StringBuilder helpBuilder2 = new StringBuilder().append("\nDownload a JDK pkg defined by the given parameters").append("\n")
                                                                 .append(yellow).append(" -arc, --architecture").append(end).append("=<arc> Architecture (e.g. x64, aarch64)").append("\n")
                                                                 .append(yellow).append(" -at,  --archive-type").append(end).append("=<at> Archive tpye (e.g. tar.gz, zip)").append("\n")
