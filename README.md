@@ -20,7 +20,7 @@
 
 Disco CLI is a command line interface for the [foojay.io](https://foojay.io) [Disco API](https://github.com/foojayio/discoapi)
 
-You can either use the jar file and start it with java -jar discocli-17.0.5.jar (which needs JDK 17 to be
+You can either use the jar file and start it with java -jar discocli-17.0.6.jar (which needs JDK 17 to be
 the current jdk) or
 you can use the native image and call it via discocli.
 At the moment there are binaries available for 
@@ -30,7 +30,7 @@ At the moment there are binaries available for
 
 The available binaries can be found [here](https://github.com/HanSolo/discocli/releases)
 
-From version 17.0.5 on now the native images will always be build on each push using [github actions](https://github.com/HanSolo/discocli/actions) and can be downloaded from the action itself.
+From version 17.0.3 on now the native images will always be build on each push using [github actions](https://github.com/HanSolo/discocli/actions) and can be downloaded from the action itself.
 Keep in mind that you might have to allow the downloaded binary to be executed on your local machine.
 On Macos you need to open the binary by CTRL+RIGHT click and Open it once in the Finder and then it will work from the command line.
 On Windows you have to double click the exe file and agree to execute it once, after that you can execute it also from the command line.
@@ -47,7 +47,7 @@ Get help by using the ```-h or --help``` parameter as follows:
 
 ```shell
 Using the jar:
-java -jar discocli-17.0.5.jar -h
+java -jar discocli-17.0.6.jar -h
 
 Using the binary:
 discocli -h
@@ -68,11 +68,11 @@ the lib c type parameter in combination with linux as os e.g. ```-os linux -lc m
 
 Get Zulu with version 17.0.2 for windows including JavaFX:
 ```shell
-java -jar discocli-17.0.5.jar -d zulu -v 17.0.2 -fx -os windows
+java -jar discocli-17.0.6.jar -d zulu -v 17.0.2 -fx -os windows
 ```
 Get the latest version of JDK 17 for Temurin on Linux:
 ```shell
-java -jar discocli-17.0.5.jar -d temurin -v 17 -os linux -latest
+java -jar discocli-17.0.6.jar -d temurin -v 17 -os linux -latest
 ```
 
 
@@ -181,13 +181,13 @@ cd /build/libs
 ```
 ```shell
 Windows:
-%GRAALVM_HOME%\bin\native-image.cmd -jar discocli-17.0.5.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
+%GRAALVM_HOME%\bin\native-image.cmd -jar discocli-17.0.6.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
 
 Linux:
-$GRAALVM_HOME/bin/native-image -jar discocli-17.0.5.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
+$GRAALVM_HOME/bin/native-image -jar discocli-17.0.6.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
 
 Macos:
-$GRAALVM_HOME/bin/native-image -jar ./discocli-17.0.5.jar --no-server -H:Name=discocli --no-fallback --enable-http --enable-https
+$GRAALVM_HOME/bin/native-image -jar ./discocli-17.0.6.jar --no-server -H:Name=discocli --no-fallback --enable-http --enable-https
 ```
 
 #### Usage
