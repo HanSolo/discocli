@@ -75,7 +75,7 @@ import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
 @Command(
     name        = "discocli",
     description = "Download a JDK pkg defined by the given parameters",
-    version     = "17.0.4"
+    version     = "17.0.5"
 )
 public class DiscoCLI implements Callable<Integer> {
     private final Detector detector = new Detector();
