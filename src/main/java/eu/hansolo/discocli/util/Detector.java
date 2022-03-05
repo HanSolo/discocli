@@ -115,13 +115,14 @@ public class Detector {
         }
 
         pathsToScan.forEach(searchPath -> {
-            final Path       path      = Paths.get(searchPath);
-            final List<Path> javaFiles = findByFileName(path, javaFile);
+            final Path path      = Paths.get(searchPath);
+            Set<Path>  javaFiles = findByFileNameWithoutException(path, javaFile);
             javaFiles.stream().filter(java -> !java.toString().contains("jre")).forEach(java -> checkForDistribution(java.toString()));
         });
+
         service.shutdown();
         try {
-            service.awaitTermination(10000, TimeUnit.MILLISECONDS);
+            service.awaitTermination(20000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             System.out.println(Ansi.AUTO.string("@|red \nError detecting distributions |@ \n"));
         }
@@ -199,16 +200,29 @@ public class Detector {
     }
 
     private List<Path> findByFileName(final Path path, final String fileName) {
-        List<Path> result;
+        List<Path> result = new ArrayList<>();
         try (Stream<Path> pathStream = Files.find(path, Integer.MAX_VALUE, (p, basicFileAttributes) -> {
             // if directory or no-read permission, ignore
             if(Files.isDirectory(p) || !Files.isReadable(p)) { return false; }
             return p.getFileName().toString().equalsIgnoreCase(fileName);
-        })
-        ) {
-            result = pathStream.collect(Collectors.toList());
-        } catch (IOException e) {
-            result = new ArrayList<>();
+        })) {
+            result.addAll(pathStream.collect(Collectors.toList()));
+        } catch (Exception e) {
+            System.out.println(e);
+            //result = new ArrayList<>();
+        }
+        return result;
+    }
+
+    private Set<Path> findByFileNameWithoutException(final Path path, final String fileName) {
+        Set<Path> result = new HashSet<>();
+        try (Stream<Path> stream = Files.walk(path, Integer.MAX_VALUE)) {
+            stream.filter(p -> Files.isRegularFile(p))
+                  .filter(p -> Files.isReadable(p))
+                  .filter(p -> p.getFileName().toString().equalsIgnoreCase(fileName))
+                  .forEach(p -> result.add(p));
+        } catch (Exception e) {
+            // Silence "Operation not permitted" exception
         }
         return result;
     }
@@ -422,9 +436,9 @@ public class Detector {
                                                             .append(osArcMode.operatingSystem().getApiString()).append(",")
                                                             .append(architecture)
                                                             .append((fxBundled ? ",fx" : ""))
-                                                            //.append(parentPath)
                                                             .append(feature.isEmpty() ? "" : ",")
                                                             .append(feature)
+                                                            .append(" (").append(parentPath).append(")")
                                                             .toString();
                 System.out.println(jkdString);
             });

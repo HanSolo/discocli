@@ -47,7 +47,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UncheckedIOException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
@@ -71,7 +70,7 @@ import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
 @Command(
     name        = "discocli",
     description = "Download a JDK pkg defined by the given parameters",
-    version     = "17.0.7"
+    version     = "17.0.8"
 )
 public class DiscoCLI implements Callable<Integer> {
 
@@ -558,11 +557,7 @@ public class DiscoCLI implements Callable<Integer> {
             }
             return 1;
         } catch (Exception e) {
-            if (e instanceof UncheckedIOException && e.getMessage().endsWith("Operation not permitted")) {
-                System.out.println(Ansi.AUTO.string("@|red \nScanning of given path not permitted |@ \n"));
-            } else {
-                System.out.println(Ansi.AUTO.string("@|red \nSomething went wrong, please check your parameters |@ \n"));
-            }
+            System.out.println(Ansi.AUTO.string("@|red \nSomething went wrong, please check your parameters |@ \n"));
             return 1;
         }
     }
