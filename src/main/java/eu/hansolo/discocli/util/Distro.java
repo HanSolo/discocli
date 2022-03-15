@@ -33,7 +33,7 @@ public enum Distro implements Api {
     BISHENG(new Distribution("BISHENG", "Bi Sheng", "bisheng", true, List.of("bisheng", "BISHENG", "BiSheng", "bi_sheng", "BI_SHENG", "bi-sheng", "BI-SHENG", "bi sheng", "BI SHENG", "Bi Sheng"), "          ")),
     CORRETTO(new Distribution("CORRETTO", "Corretto", "corretto", true, List.of("corretto","CORRETTO","Corretto"), "         ")),
     DRAGONWELL(new Distribution("DRAGONWELL", "Dragonwell", "dragonwell", true, List.of("dragonwell","DRAGONWELL","Dragonwell"), "       ")),
-    GLUON_GRAALVM(new Distribution("GLUON_GRAALVM", "Gluon GraalVM", "gluon_graalvm", true, List.of("gluon_graalvm", "GLUON_GRAALVM", "gluongraalvm", "GLUONGRAALVM", "gluon graalvm", "Gluon GraalVM", "GluonGraalVM"), "       ")),
+    GLUON_GRAALVM(new Distribution("GLUON_GRAALVM", "Gluon GraalVM", "gluon_graalvm", true, List.of("gluon_graalvm", "GLUON_GRAALVM", "gluongraalvm", "GLUONGRAALVM", "gluon graalvm", "Gluon GraalVM", "GluonGraalVM"), "    ")),
     GRAALVM_CE8(new Distribution("GRAALVM_CE8", "GraalVM CE8", "graalvm_ce8", false, List.of("GraalVM CE 8","GraalVMCE8","GraalVM_CE8"), "      ")),
     GRAALVM_CE11(new Distribution("GRAALVM_CE11", "GraalVM CE11", "graalvm_ce11", true, List.of("GraalVM CE 11","GraalVMCE11","GraalVM_CE11"), "     ")),
     GRAALVM_CE16(new Distribution("GRAALVM_CE16", "GraalVM CE16", "graalvm_ce16", true, List.of("GraalVM CE 16","GraalVMCE16","GraalVM_CE16"), "     ")),
