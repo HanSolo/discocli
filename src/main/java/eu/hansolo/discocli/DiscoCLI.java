@@ -66,13 +66,13 @@ import java.util.stream.IntStream;
 
 import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
 
-
 @Command(
     name        = "discocli",
-    description = "Download a JDK pkg defined by the given parameters",
-    version     = "17.0.9"
+    description = "Download a JDK pkg defined by the given parameters"
 )
 public class DiscoCLI implements Callable<Integer> {
+
+    @Option(names = { "-V" }, description = "Print version information and exit") boolean versionRequested;
 
     @Option(names = { "-h", "--help" }, description = "Help") boolean help;
 
@@ -148,6 +148,16 @@ public class DiscoCLI implements Callable<Integer> {
 
     @Override public Integer call() {
         try {
+            if (versionRequested) {
+                String versionString = new StringBuilder().append("@|cyan")
+                                                          .append("###################\n")
+                                                          .append("#     DiscoCLI    #\n")
+                                                          .append("#     17.0.10     #\n")
+                                                          .append("###################|@\n")
+                                                          .toString();
+                System.exit(0);
+            }
+
             if (help) {
                 final String white  = "@|white";
                 final String yellow = "@|yellow";
