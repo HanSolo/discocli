@@ -136,7 +136,7 @@ jobs:
             ${{ runner.os }}-gradlew-
 
       - name: Build
-        run: ./gradlew :jreleaser:copyJdksFromCache :jreleaser:setupJdks
+        run: ./gradlew copyJdksFromCache setupJdks
 
       - name: Jpackage
         run: ./gradlew jreleaserAssemble --assembler jpackage

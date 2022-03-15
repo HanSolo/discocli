@@ -145,7 +145,7 @@ jobs:
           sed -i -e "s/^version = .*/version = ${{ needs.precheck.outputs.VERSION }}/g" gradle.properties
 
       - name: Build
-        run: ./gradlew :jreleaser:copyJdksFromCache :jreleaser:setupJdks
+        run: ./gradlew copyJdksFromCache setupJdks
 
       - name: Jpackage
         run: ./gradlew jreleaserAssemble --assembler jpackage
