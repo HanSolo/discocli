@@ -170,7 +170,7 @@ jreleaser {
                 contributors {
                     format = '- {{contributorName}}'
                 }
-                contentTemplate = 'src/jreleaser/changelog.tpl'
+                contentTemplate = file('src/jreleaser/changelog.tpl')
             }
         }
     }
