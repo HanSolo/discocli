@@ -163,13 +163,14 @@ jreleaser {
         github {
             overwrite = true
             tagName = '{{projectVersion}}'
-            skipTag = true
+            //skipTag = true
             changelog {
                 formatted = 'ALWAYS'
                 format = '- {{commitShortHash}} {{commitTitle}}'
                 contributors {
                     format = '- {{contributorName}}'
                 }
+                contentTemplate = 'src/jreleaser/changelog.tpl'
             }
         }
     }
