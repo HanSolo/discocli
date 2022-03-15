@@ -1,0 +1,280 @@
+name: EarlyAccess
+
+on:
+  push:
+    branches: [main]
+
+env:
+  JAVA_VERSION: '17.0.2'
+  JAVA_DISTRO: 'zulu'
+
+jobs:
+  precheck:
+    name: Precheck
+    if: startsWith(github.event.head_commit.message, 'Releasing version') != true
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.vars.outputs.VERSION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: n1hility/cancel-previous-runs@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Version
+        id: vars
+        shell: bash
+        run: |
+          echo ::set-output name=VERSION::$(grep version gradle.properties | cut -d '=' -f 2 | sed 's/^ *//g')
+
+  jlink:
+    name: Jlink
+    needs: precheck
+    if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/gradle.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradlew-${{ hashFiles('**/gradlew') }}
+          restore-keys: |
+            ${{ runner.os }}-gradlew-
+
+      - name: Build
+        run: ./gradlew build -S
+
+      - name: Jlink
+        run: ./gradlew jreleaserAssemble --assembler jlink
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: jreleaser-jlink-${{ runner.os }}
+          path: |
+            build/jreleaser/trace.log
+            build/jreleaser/output.properties
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 1
+          name: artifacts
+          path: |
+            build/libs/
+            build/dependencies/
+            build/distributions/
+
+      - name: Upload jlink
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 1
+          name: jlink
+          path: |
+            build/jreleaser/assemble/discocli-standalone/jlink/
+
+  jpackage:
+    name: 'JPackage on ${{ matrix.os }}'
+    needs: [precheck, jlink]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: artifacts
+          path: build
+
+      - name: Download jlink
+        uses: actions/download-artifact@v2
+        with:
+          name: jlink
+          path: build/jreleaser/assemble/discocli-standalone/jlink
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/gradle.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradlew-${{ hashFiles('**/gradlew') }}
+          restore-keys: |
+            ${{ runner.os }}-gradlew-
+
+      - name: Build
+        run: ./gradlew :jreleaser:copyJdksFromCache :jreleaser:setupJdks
+
+      - name: Jpackage
+        run: ./gradlew jreleaserAssemble --assembler jpackage
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: jreleaser-jpackage-${{ runner.os }}
+          path: |
+            build/jreleaser/trace.log
+            build/jreleaser/output.properties
+
+      - name: Upload jpackage
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 1
+          name: jpackage
+          path: |
+            build/jreleaser/assemble/discocli-installer/jpackage/*.pkg
+            build/jreleaser/assemble/discocli-installer/jpackage/*.msi
+            build/jreleaser/assemble/discocli-installer/jpackage/*.deb
+            build/jreleaser/assemble/discocli-installer/jpackage/*.rpm
+
+  native-image:
+    needs: precheck
+    if: endsWith(${{ needs.precheck.outputs.VERSION }}, '-SNAPSHOT')
+    name: 'NativeImage on ${{ matrix.os }}'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/gradle.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradlew-${{ hashFiles('**/gradlew') }}
+          restore-keys: |
+            ${{ runner.os }}-gradlew-
+
+      - name: Build
+        run: ./gradlew copyJdksFromCache build -S
+
+      - name: 'Add Developer Command Prompt for Microsoft Visual C++'
+        if: ${{ runner.os == 'Windows' }}
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install upx
+        run: brew install upx
+        if: ${{ runner.os == 'macOS' }}
+
+      - name: NativeImage
+        run: ./gradlew jreleaserAssemble --assembler native-image
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: jreleaser-native-image-${{ runner.os }}
+          path: |
+            build/jreleaser/trace.log
+            build/jreleaser/output.properties
+
+      - name: Upload native-image
+        uses: actions/upload-artifact@v2
+        with:
+          retention-days: 1
+          name: native-image
+          path: |
+            build/jreleaser/assemble/discocli-native/native-image/*.zip
+
+  release:
+    name: Release
+    needs: [precheck, jlink, jpackage, native-image]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: artifacts
+          path: build
+
+      - name: Download jlink
+        uses: actions/download-artifact@v2
+        with:
+          name: jlink
+          path: build/jreleaser/assemble/discocli-standalone/jlink
+
+      - name: Download jpackage
+        uses: actions/download-artifact@v2
+        with:
+          name: jpackage
+          path: build/jreleaser/assemble/discocli-installer/jpackage
+
+      - name: Download native-image
+        uses: actions/download-artifact@v2
+        with:
+          name: native-image
+          path: build/jreleaser/assemble/discocli-native/native-image
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
+
+      - name: Release
+        run: ./gradlew jreleaserFullRelease
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: jreleaser-release
+          path: |
+            build/jreleaser/trace.log
+            build/jreleaser/output.properties

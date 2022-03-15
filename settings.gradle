@@ -1,2 +1,8 @@
-rootProject.name = 'discocli'
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+    }
+}
 
+rootProject.name = 'discocli'
