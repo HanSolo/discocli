@@ -21,6 +21,7 @@ package eu.hansolo.discocli.util;
 import eu.hansolo.jdktools.Architecture;
 import eu.hansolo.jdktools.OperatingMode;
 import eu.hansolo.jdktools.OperatingSystem;
+import eu.hansolo.jdktools.scopes.BuildScope;
 import eu.hansolo.jdktools.util.Helper.OsArcMode;
 import eu.hansolo.jdktools.util.OutputFormat;
 import eu.hansolo.jdktools.versioning.VersionNumber;
@@ -264,7 +265,9 @@ public class Detector {
                     fxBundled = Stream.of(jmodsFolder.listFiles()).filter(file -> !file.isDirectory()).map(File::getName).collect(Collectors.toSet()).stream().filter(filename -> filename.startsWith("javafx")).count() > 0;
                 }
 
-                VersionNumber version = null;
+                VersionNumber version    = null;
+                VersionNumber jdkVersion = null;
+                BuildScope    buildScope = BuildScope.BUILD_OF_OPEN_JDK;
 
                 String        line1         = lines[0];
                 String        line2         = lines[1];
@@ -380,6 +383,15 @@ public class Detector {
                             break;
                         }
                     }
+
+                }
+
+                if (name.equalsIgnoreCase("Mandrel")) {
+                    buildScope = BuildScope.BUILD_OF_GRAALVM;
+                    if (releaseProperties.containsKey("JAVA_VERSION")) {
+                        final String javaVersion = releaseProperties.getProperty("JAVA_VERSION");
+                        if (null == jdkVersion) { jdkVersion = VersionNumber.fromText(javaVersion); }
+                    }
                 }
 
                 if (name.equals("Unknown build of OpenJDK") && lines.length > 2) {
@@ -389,13 +401,19 @@ public class Detector {
                         try {
                             List<String> readmeLines = Helper.readTextFileToList(readmeFile.getAbsolutePath());
                             if (readmeLines.stream().filter(l -> l.toLowerCase().contains("liberica native image kit")).count() > 0) {
-                                name      = "Liberica Native";
-                                apiString = "liberica_native";
+                                name       = "Liberica Native";
+                                apiString  = "liberica_native";
+                                buildScope = BuildScope.BUILD_OF_GRAALVM;
+
                                 GRAALVM_VERSION_MATCHER.reset(line3);
                                 final List<MatchResult> results = GRAALVM_VERSION_MATCHER.results().collect(Collectors.toList());
                                 if (!results.isEmpty()) {
                                     MatchResult result = results.get(0);
                                     version = VersionNumber.fromText(result.group(2));
+                                }
+                                if (releaseProperties.containsKey("JAVA_VERSION")) {
+                                    final String javaVersion = releaseProperties.getProperty("JAVA_VERSION");
+                                    if (null == jdkVersion) { jdkVersion = VersionNumber.fromText(javaVersion); }
                                 }
                             } else if (readmeLines.stream().filter(l -> l.toLowerCase().contains("liberica")).count() > 0) {
                                 name      = "Liberica";
@@ -406,14 +424,27 @@ public class Detector {
                         }
                     } else {
                         if (line3.contains("graalvm")) {
-                            name      = "GraalVM";
-                            apiString = graalVersion.getMajorVersion().getAsInt() >= 8 ? "graalvm_ce" + graalVersion.getMajorVersion().getAsInt() : "";
+                            name       = "GraalVM";
+                            apiString  = graalVersion.getMajorVersion().getAsInt() >= 8 ? "graalvm_ce" + graalVersion.getMajorVersion().getAsInt() : "";
+                            buildScope = BuildScope.BUILD_OF_GRAALVM;
 
                             GRAALVM_VERSION_MATCHER.reset(line3);
                             final List<MatchResult> results = GRAALVM_VERSION_MATCHER.results().collect(Collectors.toList());
                             if (!results.isEmpty()) {
                                 MatchResult result = results.get(0);
                                 version = VersionNumber.fromText(result.group(2));
+                            }
+
+                            if (releaseProperties.containsKey("VENDOR")) {
+                                final String vendor = releaseProperties.getProperty("VENDOR").toLowerCase().replaceAll("\"", "");
+                                if (vendor.equalsIgnoreCase("Gluon")) {
+                                    name      = "Gluon GraalVM";
+                                    apiString = "gluon_graalvm";
+                                }
+                            }
+                            if (releaseProperties.containsKey("JAVA_VERSION")) {
+                                final String javaVersion = releaseProperties.getProperty("JAVA_VERSION");
+                                if (null == jdkVersion) { jdkVersion = VersionNumber.fromText(javaVersion); }
                             }
                         } else if (line3.contains("microsoft")) {
                             name      = "Microsoft";
@@ -427,6 +458,8 @@ public class Detector {
                         }
                     }
                 }
+
+                if (null == jdkVersion) { jdkVersion = version; }
 
                 if (architecture.isEmpty()) { architecture = osArcMode.architecture().name().toLowerCase(); }
 
