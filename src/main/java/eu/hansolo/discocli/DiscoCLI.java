@@ -68,17 +68,22 @@ import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
 
 @Command(
     name        = "discocli",
-    description = "Download a JDK pkg defined by the given parameters"
+    description = "Download a JDK pkg defined by the given parameters",
+    version     = "17.0.11-SNAPSHOT"
 )
 public class DiscoCLI implements Callable<Integer> {
 
-    @Option(names = { "-V" }, description = "Print version information and exit") boolean versionRequested;
+    @Option(names = { "-V" }, description = "Print version information and exit")
+    boolean versionRequested;
 
-    @Option(names = { "-h", "--help" }, description = "Help") boolean help;
+    @Option(names = { "-h", "--help" }, description = "Help")
+    boolean help;
 
-    @Option(names = { "-i", "--info" }, description = "Info") boolean info;
+    @Option(names = { "-i", "--info" }, description = "Info")
+    boolean info;
 
-    @Option(names = { "-f", "--find" }, description = "Find available JDK pkgs for given parameters") boolean find;
+    @Option(names = { "-f", "--find" }, description = "Find available JDK pkgs for given parameters")
+    boolean find;
 
     @Option(names = { "-os", "--operating-system" }, description = "Operating System (windows, linux, macos)")
     private String os = null;
@@ -149,12 +154,12 @@ public class DiscoCLI implements Callable<Integer> {
     @Override public Integer call() {
         try {
             if (versionRequested) {
-                String versionString = new StringBuilder().append("@|cyan")
-                                                          .append("###################\n")
+                String versionString = new StringBuilder().append("###################\n")
                                                           .append("#     DiscoCLI    #\n")
-                                                          .append("#     17.0.10     #\n")
-                                                          .append("###################|@\n")
+                                                          .append("#     17.0.11     #\n")
+                                                          .append("###################\n")
                                                           .toString();
+                System.out.println(versionString);
                 System.exit(0);
             }
 
