@@ -105,6 +105,22 @@ discocli -d liberica -v 12.0.1 -os linux -lc glibc -arc amd64 -at tar.gz -pt jdk
 discocli -d liberica -v 12 -os linux -lc glibc -arc amd64 -at tar.gz -pt jdk
 ```
 
+Find available pkgs for a given set of parameters e.g. early access builds of zulu version 18 for mac on aarch64 as jdk
+```shell
+discocli -fu zulu,19,macos,aarch64,jdk,ea
+
+Updates found  
+
+discocli -d zulu -v 19-ea+8 -os macos -lc libc -arc aarch64 -at zip -pt jdk -ea 
+discocli -d zulu -v 19-ea+7 -os macos -lc libc -arc aarch64 -at zip -pt jdk -ea 
+discocli -d zulu -v 19-ea+6 -os macos -lc libc -arc aarch64 -at zip -pt jdk -ea 
+discocli -d zulu -v 19-ea+5 -os macos -lc libc -arc aarch64 -at zip -pt jdk -ea 
+discocli -d zulu -v 19-ea+4 -os macos -lc libc -arc aarch64 -at zip -pt jdk -ea 
+discocli -d zulu -v 19-ea+3 -os macos -lc libc -arc aarch64 -at zip -pt jdk -ea 
+discocli -d zulu -v 19-ea+2 -os macos -lc libc -arc aarch64 -at zip -pt jdk -ea 
+```
+
+
 Find distributions in a given folder
 ```shell
 discocli -fd "/System/Volumes/Data/Library/Java/JavaVirtualMachines/"
