@@ -3,9 +3,10 @@ import java.text.SimpleDateFormat
 plugins {
     id 'java-library'
     id 'application'
-    id 'net.nemerosa.versioning' version '2.15.1'
-    id 'org.jreleaser'           version '1.0.0-M3'
-    id 'org.jreleaser.jdks'      version '1.0.0-M3'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'net.nemerosa.versioning'         version '2.15.1'
+    id 'org.jreleaser'                   version '1.0.0-M3'
+    id 'org.jreleaser.jdks'              version '1.0.0-M3'
 }
 
 description = 'Disco CLI is a command line interface for the foojay.io Disco API'
@@ -59,6 +60,9 @@ jar {
     }
 }
 
+shadowJar {
+    archiveClassifier.set('fat');
+}
 
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
