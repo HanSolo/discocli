@@ -36,6 +36,7 @@ import eu.hansolo.jdktools.PackageType;
 import eu.hansolo.jdktools.ReleaseStatus;
 import eu.hansolo.jdktools.util.Helper.OsArcMode;
 import eu.hansolo.jdktools.util.OutputFormat;
+import eu.hansolo.jdktools.versioning.Semver;
 import eu.hansolo.jdktools.versioning.VersionNumber;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -112,7 +113,7 @@ public class DiscoCLI implements Callable<Integer> {
     @Option(names = { "-fd", "--find-distros" }, description = "Find distributions in given path (e.g. \"./\")")
     private String fd = null;
 
-    @Option(names = { "-fu", "--update-available" }, description = "Find update for given distribution DISTRO,VERSION,OPERATING SYSTEM,ARCHITECTURE,PACKAGE TYPE,FX(optional) (e.g. \"zulu,16.0.1,macos,aarch64,jdk\")")
+    @Option(names = { "-fu", "--update-available" }, description = "Find update for given distribution DISTRO,VERSION,OPERATING SYSTEM,ARCHITECTURE,PACKAGE TYPE,EA(optional),FX(optional) (e.g. \"zulu,18,macos,aarch64,jdk,ea\")")
     private String fu = null;
 
     @Option(names = { "-ea", "--early-access" }, description = "Include early access builds") boolean ea;
@@ -198,7 +199,7 @@ public class DiscoCLI implements Callable<Integer> {
                                                                 .append(yellow).append(" -p,   --path").append(end).append("=<pt> The path where the JDK pkg should be saved to (e.g. /User/hansolo").append("\n")
                                                                 .append(yellow).append(" -pt,  --package-type").append(end).append("=<pt> Package type (e.g. jdk, jre)").append("\n")
                                                                 .append(yellow).append(" -fd,  --find-distros").append(end).append("=<fd> Find distributions in given path (e.g. \"./\")").append("\n")
-                                                                .append(yellow).append(" -fu,  --find-update").append(end).append("=<fu> Find update for given distribution DISTRO,VERSION,OPERATING SYSTEM,ARCHITECTURE,PACKAGE TYPE,FX(optional) (e.g. \"zulu,16.0.1,macos,aarch64,jdk\")").append("\n")
+                                                                .append(yellow).append(" -fu,  --find-update").append(end).append("=<fu> Find update for given distribution DISTRO,VERSION,OPERATING SYSTEM,ARCHITECTURE,PACKAGE TYPE,EA(optional),FX(optional) (e.g. \"zulu,18,macos,aarch64,jdk,ea\")").append("\n")
                                                                 .append(yellow).append(" -v,   --version").append(end).append("=<v> Version (e.g. 17.0.2)").append("\n");
 
                 System.out.println(Ansi.AUTO.string(helpBuilder1.toString()));
@@ -242,12 +243,12 @@ public class DiscoCLI implements Callable<Integer> {
 
             if (null != fu) {
                 if (null == fu || fu.isEmpty()) {
-                    System.out.println(Ansi.AUTO.string("@|red \nPlease specify the distribution you would like to check e.g. zulu,16.0.1,macos,x64,jdk,fx |@ \n"));
+                    System.out.println(Ansi.AUTO.string("@|red \nPlease specify the distribution you would like to check e.g. zulu,18,macos,x64,jdk,ea,fx |@ \n"));
                     return 1;
                 }
                 String[] parts = fu.split(",");
                 if (parts.length < 5) {
-                    System.out.println(Ansi.AUTO.string("@|red \nPlease specify the distribution you would like to check e.g. zulu,16.0.1,macos,x64,jdk,fx |@ \n"));
+                    System.out.println(Ansi.AUTO.string("@|red \nPlease specify the distribution you would like to check e.g. zulu,18,macos,x64,jdk,ea,fx |@ \n"));
                     return 1;
                 }
 
@@ -265,10 +266,14 @@ public class DiscoCLI implements Callable<Integer> {
                     return 1;
                 }
 
-                boolean         earlyAccess     = ReleaseStatus.EA == versionNumber.getReleaseStatus().orElse(ReleaseStatus.GA);
-                boolean         javafxBundled;
+                boolean earlyAccess = false;
+                boolean javafxBundled;
                 if (parts.length == 6) {
+                    earlyAccess = parts[5].equalsIgnoreCase("ea");
                     javafxBundled = parts[5].equalsIgnoreCase("fx");
+                } else if (parts.length == 7) {
+                    earlyAccess   = parts[5].equalsIgnoreCase("ea");
+                    javafxBundled = parts[6].equalsIgnoreCase("fx");
                 } else {
                     javafxBundled = false;
                 }
@@ -279,7 +284,6 @@ public class DiscoCLI implements Callable<Integer> {
                 if (earlyAccess) {
                     updates = pkgs.stream()
                                   .filter(pkg -> pkg.isJavaFXBundled() == javafxBundled)
-                                  .filter(pkg -> pkg.getJavaVersion().getVersionNumber().compareTo(versionNumber) > 0)
                                   .collect(Collectors.toList());
                 } else {
                     VersionNumber withoutBuild = VersionNumber.fromText(versionNumber.toString(OutputFormat.REDUCED_COMPRESSED, true, false));

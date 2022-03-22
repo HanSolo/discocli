@@ -265,13 +265,14 @@ public class Helper {
                 builder.append("&lib_c_type=").append(libcType.getApiString());
             }
         }
-        if (null != architecture)    { builder.append("&architecture=").append(architecture.getApiString()); }
-        if (null != packageType)     { builder.append("&package_type=").append(packageType.getApiString()); }
-        if (null != archiveType)     { builder.append("&archive_type=").append(archiveType.getApiString()); }
+        if (null != architecture) { builder.append("&architecture=").append(architecture.getApiString()); }
+        if (null != packageType) { builder.append("&package_type=").append(packageType.getApiString()); }
+        if (null != archiveType) { builder.append("&archive_type=").append(archiveType.getApiString()); }
         builder.append(includeEA ? "&release_status=ea&release_status=ga" : "&release_status=ga");
         builder.append("&latest=all_of_version");
 
         String request = builder.toString();
+
         HttpResponse<String> response = get(request);
         if (null == response || response.statusCode() != 200 || null == response.body() || response.body().isEmpty()) {
             return List.of();
