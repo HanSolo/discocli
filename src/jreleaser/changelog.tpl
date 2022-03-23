@@ -11,6 +11,7 @@ These binaries require an external Java runtime.
 
 * {{#f_release_download_url}}discocli-{{projectVersion}}.zip{{/f_release_download_url}} (requires Java 17+)
 * {{#f_release_download_url}}discocli-{{projectVersion}}.tar{{/f_release_download_url}} (requires Java 17+)
+* {{#f_release_download_url}}discocli-{{projectVersion}}-fat.jar{{/f_release_download_url}} (requires Java 17+)
 
 ### ☕️ Bundled Java Runtimes
 

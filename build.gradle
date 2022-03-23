@@ -321,8 +321,13 @@ jreleaser {
                 path = 'build/distributions/{{distributionName}}-{{projectVersion}}.tar'
             }
         }
+        'discocli-fat' {
+            distributionType = 'SINGLE_JAR'
+            artifact {
+                path = 'build/libs/{{projectName}}-{{projectVersion}}-fat.jar'
+            }
+        }
         'discocli-native' {
-            active = 'ALWAYS'
             distributionType = 'NATIVE_IMAGE'
             artifact {
                 path = '{{nativeImageDir}}/{{distributionName}}-{{projectVersion}}-osx-x86_64.zip'
