@@ -5,8 +5,8 @@ plugins {
     id 'application'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'net.nemerosa.versioning'         version '2.15.1'
-    id 'org.jreleaser'                   version '1.0.0-RC1'
-    id 'org.jreleaser.jdks'              version '1.0.0-RC1'
+    id 'org.jreleaser'                   version '1.0.0-RC2'
+    id 'org.jreleaser.jdks'              version '1.0.0-RC2'
 }
 
 description = 'Disco CLI is a command line interface for the foojay.io Disco API'
