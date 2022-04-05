@@ -33,10 +33,8 @@ import eu.hansolo.jdktools.LibCType;
 import eu.hansolo.jdktools.OperatingMode;
 import eu.hansolo.jdktools.OperatingSystem;
 import eu.hansolo.jdktools.PackageType;
-import eu.hansolo.jdktools.ReleaseStatus;
 import eu.hansolo.jdktools.util.Helper.OsArcMode;
 import eu.hansolo.jdktools.util.OutputFormat;
-import eu.hansolo.jdktools.versioning.Semver;
 import eu.hansolo.jdktools.versioning.VersionNumber;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -70,7 +68,7 @@ import static eu.hansolo.jdktools.OperatingSystem.WINDOWS;
 @Command(
     name        = "discocli",
     description = "Download a JDK pkg defined by the given parameters",
-    version     = "17.0.11-SNAPSHOT"
+    version     = "17.0.12-SNAPSHOT"
 )
 public class DiscoCLI implements Callable<Integer> {
 
@@ -157,7 +155,7 @@ public class DiscoCLI implements Callable<Integer> {
             if (versionRequested) {
                 String versionString = new StringBuilder().append("###################\n")
                                                           .append("#     DiscoCLI    #\n")
-                                                          .append("#     17.0.11     #\n")
+                                                          .append("#     17.0.12     #\n")
                                                           .append("###################\n")
                                                           .toString();
                 System.out.println(versionString);

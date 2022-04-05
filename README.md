@@ -20,7 +20,7 @@
 
 Disco CLI is a command line interface for the [foojay.io](https://foojay.io) [Disco API](https://github.com/foojayio/discoapi)
 
-You can either use the jar file and start it with java -jar discocli-17.0.11.jar (which needs JDK 17 to be
+You can either use the jar file and start it with java -jar discocli-17.0.12.jar (which needs JDK 17 to be
 the current jdk) or
 you can use the native image and call it via discocli.
 At the moment there are binaries available for 
@@ -47,7 +47,7 @@ Get help by using the ```-h or --help``` parameter as follows:
 
 ```shell
 Using the jar:
-java -jar discocli-17.0.11.jar -h
+java -jar discocli-17.0.12.jar -h
 
 Using the binary:
 discocli -h
@@ -68,11 +68,11 @@ the lib c type parameter in combination with linux as os e.g. ```-os linux -lc m
 
 Get Zulu with version 17.0.2 for windows including JavaFX:
 ```shell
-java -jar discocli-17.0.11.jar -d zulu -v 17.0.2 -fx -os windows
+java -jar discocli-17.0.12.jar -d zulu -v 17.0.2 -fx -os windows
 ```
 Get the latest version of JDK 17 for Temurin on Linux:
 ```shell
-java -jar discocli-17.0.11.jar -d temurin -v 17 -os linux -latest
+java -jar discocli-17.0.12.jar -d temurin -v 17 -os linux -latest
 ```
 
 
@@ -105,7 +105,8 @@ discocli -d liberica -v 12.0.1 -os linux -lc glibc -arc amd64 -at tar.gz -pt jdk
 discocli -d liberica -v 12 -os linux -lc glibc -arc amd64 -at tar.gz -pt jdk
 ```
 
-Find available pkgs for a given set of parameters e.g. early access builds of zulu version 18 for mac on aarch64 as jdk
+Find available pkgs for a given set of parameters e.g. early access builds of zulu 
+with version 18 for mac on aarch64 as jdk
 ```shell
 discocli -fu zulu,19,macos,aarch64,jdk,ea
 
@@ -134,7 +135,8 @@ zulu,18-ea+34,macos,aarch64
 zulu,8.0.322+6,macos,aarch64,fx
 ```
 The distribution that is currently defined in JAVA_HOME is marked with an '*'.
-If you would like to check the default path for your operating system you can simply use
+If you would like to check the default path for your operating system,
+you can simply use
 ```shell
 discocli -fd ""
 
@@ -153,7 +155,8 @@ Windows: C:\Program Files\Java\
 Linux  : /usr/lib/jvm
 ```
 
-You can check if there is an update available for a given distribution using the following command
+You can check if there is an update available for a given distribution 
+using the following command
 ```shell
 Find updates for Zulu 16.0.1 for MacOS on x64 as a JRE:
 
@@ -181,7 +184,8 @@ discocli -d liberica -v 17.0.2 -os windows -lc c_std_lib -arc amd64 -at msi -pt 
 
 You also simply check for available packages for a set of parameters
 ```shell
-Find all available jdk packages of Zulu for Macos on AARCH64 for version 17.0.2 that comes as a tar.gz:
+Find all available jdk packages of Zulu for Macos on AARCH64 for version 17.0.2 
+that comes as a tar.gz:
 
 discocli -f -d zulu -v 17.0.2 -arc aarch4 -os macos -at tar.gz -pt jdk
 
@@ -209,13 +213,13 @@ cd /build/libs
 ```
 ```shell
 Windows:
-%GRAALVM_HOME%\bin\native-image.cmd -jar discocli-17.0.11.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
+%GRAALVM_HOME%\bin\native-image.cmd -jar discocli-17.0.12.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
 
 Linux:
-$GRAALVM_HOME/bin/native-image -jar discocli-17.0.11.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
+$GRAALVM_HOME/bin/native-image -jar discocli-17.0.12.jar --no-server -H:Name=discocli --no-fallback --static --enable-http --enable-https
 
 Macos:
-$GRAALVM_HOME/bin/native-image -jar ./discocli-17.0.11.jar --no-server -H:Name=discocli --no-fallback --enable-http --enable-https
+$GRAALVM_HOME/bin/native-image -jar ./discocli-17.0.12.jar --no-server -H:Name=discocli --no-fallback --enable-http --enable-https
 ```
 
 #### Usage
