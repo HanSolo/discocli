@@ -178,6 +178,18 @@ discocli -d liberica -v 17.0.2 -os windows -lc c_std_lib -arc amd64 -at msi -pt 
 
 ```
 
+
+You also simply check for available packages for a set of parameters
+```shell
+Find all available jdk packages of Zulu for Macos on AARCH64 for version 17.0.2 that comes as a tar.gz:
+
+discocli -f -d zulu -v 17.0.2 -arc aarch4 -os macos -at tar.gz -pt jdk
+
+Packages found for Zulu for version 17:
+discocli -d zulu -v 17.0.2 -os macos -lc libc -arc x64 -at tar.gz -pt jdk -fx
+discocli -d zulu -v 17.0.2 -os macos -lc libc -arc x64 -at tar.gz -pt jdk
+```
+
 <br>
 
 #### Build native image with GraalVM:
