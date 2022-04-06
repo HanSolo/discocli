@@ -194,6 +194,14 @@ discocli -d zulu -v 17.0.2 -os macos -lc libc -arc x64 -at tar.gz -pt jdk -fx
 discocli -d zulu -v 17.0.2 -os macos -lc libc -arc x64 -at tar.gz -pt jdk
 ```
 
+If you just want to download the latest available LTS release of a given distro
+````shell
+Get the latest available LTS release of Zulu for your machine:
+
+discocli -d zulu -latest-lts
+
+````
+
 <br>
 
 #### Build native image with GraalVM:

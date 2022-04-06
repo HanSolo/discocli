@@ -120,6 +120,8 @@ public class DiscoCLI implements Callable<Integer> {
 
     @Option(names = { "-latest" }, description = "Latest available for given version number") boolean latest;
 
+    @Option(names = { "-latest-lts" }, description = "Latest available LTS release") boolean lts;
+
     private int downloadPkg(final String url, final String filename, final long size) {
         final Path path = Paths.get(filename);
         if (Files.exists(path)) { return 2; }
@@ -179,6 +181,7 @@ public class DiscoCLI implements Callable<Integer> {
                                                                 .append("[").append(yellow).append(" -ea").append(end).append("]").append(" ")
                                                                 .append("[").append(yellow).append(" -fx").append(end).append("]").append(" ")
                                                                 .append("[").append(yellow).append(" -latest").append(end).append("]").append(" ")
+                                                                .append("[").append(yellow).append(" -latest-lts").append(end).append("]").append(" ")
                                                                 .append("[").append(yellow).append(" -i").append(end).append("]").append(" ")
                                                                 .append("[").append(yellow).append(" -f").append(end).append("]").append(" ")
                                                                 .append("[").append(yellow).append(" -fd").append(end).append("=<fd>]")
@@ -192,6 +195,7 @@ public class DiscoCLI implements Callable<Integer> {
                                                                 .append(yellow).append(" -fx,  --javafx").append(end).append(" Bundled with JavaFX").append("\n")
                                                                 .append(yellow).append(" -i,   --info").append(end).append(" Info about parameters").append("\n")
                                                                 .append(yellow).append(" -latest").append(end).append(" Latest available for given version number").append("\n")
+                                                                .append(yellow).append(" -latest-lts").append(end).append(" Latest available LTS release").append("\n")
                                                                 .append(yellow).append(" -lc,  --libc-type").append(end).append("=<lc> Lib C type (libc, glibc, c_std_lib, musl)").append("\n")
                                                                 .append(yellow).append(" -os,  --operating-system").append(end).append("=<os> Operating system (e.g. windows, linux, macos)").append("\n")
                                                                 .append(yellow).append(" -p,   --path").append(end).append("=<pt> The path where the JDK pkg should be saved to (e.g. /User/hansolo").append("\n")
@@ -427,6 +431,10 @@ public class DiscoCLI implements Callable<Integer> {
                 }
             }
 
+            if (lts && (null != versionNumber || latest || ea)) {
+                System.out.println(Ansi.AUTO.string("@|red \n -latest-lts only works without a given version number, latest or ea |@ \n"));
+                return 1;
+            }
             if (null == versionNumber && latest) {
                 System.out.println(Ansi.AUTO.string("@|red \n -latest only works with a given version number (e.g. -v 17 -latest) |@ \n"));
                 return 1;
@@ -449,7 +457,8 @@ public class DiscoCLI implements Callable<Integer> {
             final String architectureParam         = Architecture.NONE == architecture ? "" : "&architecture=" + architecture.getApiString();
             final String archiveTypeParam          = ArchiveType.NONE == archiveType ? "" : "&archive_type=" + archiveType.getApiString();
             final String packageTypeParam          = PackageType.NONE == packageType ? "" : "&package_type=" + packageType.getApiString();
-            final String latestParam               = find ? (majorVersionOnly ? "&latest=all_of_version" : "") : ((null == versionNumber || latest) ? "&latest=available" : "");
+            final String latestParam               = find ? (majorVersionOnly ? "&latest=all_of_version" : "") : ((null == versionNumber || latest) ? lts ? "" : "&latest=available" : "");
+            final String latestLtsParam            = lts ? "&latest=available&version_by_definition=latest_lts" : "";
             final String javafxBundledParam        = fx ? "&javafx_bundled=true" : "";
             final String releaseStatusParam        = ea ? "&release_status=ea&release_status=ga" : "&release_status=ga";
             final String directlyDownloadableParam = "&directlyDownloadable=true";
@@ -462,12 +471,15 @@ public class DiscoCLI implements Callable<Integer> {
                                                       .append(architectureParam)
                                                       .append(versionParam)
                                                       .append(latestParam)
+                                                      .append(latestLtsParam)
                                                       .append(archiveTypeParam)
                                                       .append(javafxBundledParam)
                                                       .append(packageTypeParam)
                                                       .append(directlyDownloadableParam)
                                                       .append(releaseStatusParam)
                                                       .toString();
+
+            System.out.println(request);
 
             HttpResponse<String> response = Helper.get(request);
             if (null == response) {
