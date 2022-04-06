@@ -479,8 +479,6 @@ public class DiscoCLI implements Callable<Integer> {
                                                       .append(releaseStatusParam)
                                                       .toString();
 
-            System.out.println(request);
-
             HttpResponse<String> response = Helper.get(request);
             if (null == response) {
                 System.out.println(Ansi.AUTO.string(Constants.DEFAULT_ERROR_MSG));
