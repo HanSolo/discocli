@@ -321,6 +321,7 @@ public enum Distro implements Api {
         return Arrays.stream(values())
                      .filter(distro -> Distro.NONE            != distro)
                      .filter(distro -> Distro.NOT_FOUND       != distro)
+                     .filter(distro -> Distro.GLUON_GRAALVM   != distro)
                      .filter(distro -> Distro.GRAALVM_CE17    != distro)
                      .filter(distro -> Distro.GRAALVM_CE16    != distro)
                      .filter(distro -> Distro.GRAALVM_CE11    != distro)
