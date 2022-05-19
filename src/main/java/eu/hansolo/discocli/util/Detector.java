@@ -307,6 +307,7 @@ public class Detector {
                 if (null == version) { version = VersionNumber.fromText(withoutPrefix.substring(withoutPrefix.indexOf("\"") + 1, withoutPrefix.lastIndexOf("\""))); }
                 VersionNumber graalVersion = version;
 
+                releaseProperties.clear();
                 if (releaseFile.exists()) {
                     try (FileInputStream propFile = new FileInputStream(releaseFile)) {
                         releaseProperties.load(propFile);
