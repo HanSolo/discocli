@@ -4,9 +4,9 @@ plugins {
     id 'java-library'
     id 'application'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'net.nemerosa.versioning'         version '2.15.1'
-    id 'org.jreleaser'                   version '1.0.0-RC2'
-    id 'org.jreleaser.jdks'              version '1.0.0-RC2'
+    id 'net.nemerosa.versioning'         version '3.0.0'
+    id 'org.jreleaser'                   version '1.1.0'
+    id 'org.jreleaser.jdks'              version '1.1.0'
 }
 
 description = 'Disco CLI is a command line interface for the foojay.io Disco API'
@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-    implementation      'eu.hansolo:jdktools:17+'
+    implementation      'eu.hansolo:jdktools:17.0.18'
     implementation      'com.google.code.gson:gson:2.9.0'
     implementation      'info.picocli:picocli:4.6.3'
     annotationProcessor 'info.picocli:picocli-codegen:4.6.3'
